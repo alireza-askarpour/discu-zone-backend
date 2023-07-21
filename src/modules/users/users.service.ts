@@ -24,7 +24,10 @@ export class UsersService {
   }
 
   async getMe(id: string): Promise<ResponseFormat<any>> {
-    const user = await this.userRepository.findOne({ where: { id } });
+    const user = await this.userRepository.findOne({
+      where: { id },
+      attributes: { exclude: ['password'] },
+    });
     return { statusCode: HttpStatus.OK, data: { user } };
   }
 }
