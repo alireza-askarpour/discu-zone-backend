@@ -7,7 +7,7 @@ export interface User {
   fullName: string;
   username: string | null;
   email: string;
-  password: string;
+  password?: string;
   role: Roles;
   avatar: string | null;
   cover: string | null;
