@@ -8,7 +8,9 @@ import { SignUpDto } from './dtos/signup.dto';
 import { ApiLogin } from './docs/login.doc';
 import { DoesUserExist } from 'src/core/guards/doesUserExist.guard';
 import { LoginDto } from './dtos/login.dto';
+import { ApiTags } from '@nestjs/swagger';
 
+@ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   constructor(private authService: AuthService) {}
@@ -17,7 +19,8 @@ export class AuthController {
   @UseGuards(AuthGuard('local'))
   @Post('login')
   async login(@Request() req: _Request, @Body() loginDto: LoginDto) {
-    return await this.authService.login(req.user.email);
+    const payload = { id: req.user.id, email: req.user.email };
+    return await this.authService.login(payload);
   }
 
   @ApiSignup()

@@ -1,7 +1,9 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
+
 import { UsersService } from '../users/users.service';
+import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
@@ -17,9 +19,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     // check if user in the token actually exist
     const user = await this.userService.findOneById(payload.id);
     if (!user) {
-      throw new UnauthorizedException(
-        'You are not authorized to perform the operation',
-      );
+      throw new UnauthorizedException(ResponseMessages.UNAUTHORIZED);
     }
     return payload;
   }

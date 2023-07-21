@@ -24,8 +24,8 @@ export class AuthService {
     return result;
   }
 
-  public async login(email: string) {
-    const token = await this.generateToken(email);
+  public async login({ id, email }: { id: string; email: string }) {
+    const token = await this.generateToken({ id, email });
     return { statusCode: HttpStatus.CREATED, data: { token } };
   }
 
@@ -33,13 +33,15 @@ export class AuthService {
     const pass = await this.hashPassword(user.password);
     const newUser = await this.userService.create({ ...user, password: pass });
     const { password, ...result } = newUser['dataValues'];
-    const token = await this.generateToken(result.email);
+    const token = await this.generateToken({
+      email: result.email,
+      id: result.id,
+    });
 
     return { statusCode: HttpStatus.CREATED, data: { token } };
   }
 
-  private async generateToken(email: string) {
-    const payload = { email };
+  private async generateToken(payload: { id: string; email: string }) {
     const token = await this.jwtService.signAsync(payload);
     return token;
   }
