@@ -26,6 +26,9 @@ export class User extends Model<User> {
     type: DataType.STRING,
     unique: true,
     allowNull: false,
+    validate: {
+      isEmail: true,
+    },
   })
   email: string;
 
@@ -33,16 +36,16 @@ export class User extends Model<User> {
     type: DataType.STRING,
     allowNull: false,
     validate: {
-      args: [8],
-      msg: 'Password must be at least 8 characters long',
+      min: 8,
     },
   })
   password: string;
 
   @Column({
     type: DataType.ENUM,
-    values: ['admin', 'member'],
+    values: ['ADMIN', 'USER'],
     allowNull: false,
+    defaultValue: 'USER',
   })
   role: string;
 

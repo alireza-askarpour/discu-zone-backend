@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
@@ -9,6 +10,7 @@ import { Observable } from 'rxjs';
 
 import { UsersService } from 'src/modules/users/users.service';
 import { ResponseMessages } from '../constants/response-messages.constant';
+import { emailPattern } from '../constants/pattern.constant';
 
 @Injectable()
 export class DoesUserExist implements CanActivate {
@@ -22,6 +24,11 @@ export class DoesUserExist implements CanActivate {
   }
 
   async validateRequest(request: Request) {
+    const email = request.body.email;
+    if (!email || !emailPattern.test(email)) {
+      throw new BadRequestException(ResponseMessages.INVALID_EMAIL);
+    }
+
     const userExist = await this.userService.findOneByEmail(request.body.email);
     if (userExist) {
       throw new ForbiddenException(ResponseMessages.EMAIL_ALREADY_EXIST);

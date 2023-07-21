@@ -12,7 +12,6 @@ export class UsersRepository {
   }
 
   async createUser(userData: any): Promise<User> {
-    console.log({userData})
     return User.create(userData);
   }
 }
