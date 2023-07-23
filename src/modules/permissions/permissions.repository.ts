@@ -2,6 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { PERMISSIONS_REPOSITORY } from 'src/core/constants';
 import { Permissions } from './permissions.entity';
 import { PermissionCreateDto } from './dtos/create-permission.dto';
+import { PermissionUpdateDto } from './dtos/update-permission.dto';
 
 @Injectable()
 export class PermissionsRepository {
@@ -20,5 +21,13 @@ export class PermissionsRepository {
 
   async findAll() {
     return await this.permissions.findAll();
+  }
+
+  async update(id: string, data: PermissionUpdateDto) {
+    return await this.permissions.update(data, { where: { id } });
+  }
+
+  async findByPk(id: string) {
+    return await this.permissions.findByPk(id);
   }
 }

@@ -1,9 +1,17 @@
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  HttpStatus,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 
 import { PermissionsRepository } from './permissions.repository';
 import { PermissionCreateDto } from './dtos/create-permission.dto';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 import { ResponseFormat } from '../../core/interfaces/response.interface';
+import { PermissionUpdateDto } from './dtos/update-permission.dto';
+import { IdDto } from 'src/core/dtos/id.dto';
 
 @Injectable()
 export class PermissionsService {
@@ -26,5 +34,34 @@ export class PermissionsService {
     const permissions = createdPermissions.dataValues;
 
     return { statusCode: HttpStatus.CREATED, data: { permissions } };
+  }
+
+  async update(
+    id: string,
+    data: PermissionUpdateDto,
+  ): Promise<ResponseFormat<any>> {
+    const existPermissionById = await this.permissionsRepository.findByPk(id);
+    if (!existPermissionById) {
+      throw new NotFoundException(ResponseMessages.NOT_FOUND_PERMISSION);
+    }
+
+    const existPermissionByName = await this.permissionsRepository.findByName(
+      data.name,
+    );
+    if (existPermissionByName) {
+      throw new BadRequestException(ResponseMessages.NAME_ALREADY_EXIST);
+    }
+
+    const [updateCount] = await this.permissionsRepository.update(id, data);
+    if (updateCount !== 1) {
+      throw new InternalServerErrorException(
+        ResponseMessages.FAILED_UPDATE_PERMISSION,
+      );
+    }
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: ResponseMessages.UPDATED_PERMISSION,
+    };
   }
 }
