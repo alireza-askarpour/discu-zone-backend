@@ -22,7 +22,6 @@ export const ApiGetMe = () => {
             fullName: 'John Doe',
             username: null,
             email: 'johndoe@gmail.com',
-            role: 'USER',
             avatar: null,
             cover: null,
             friends: [],

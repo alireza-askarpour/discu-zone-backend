@@ -1,5 +1,12 @@
-export enum Roles {
-  ADMIN = 'ADMIN',
+export enum FriendStatus {
+  PENDING = 'PENDING',
+  ACCEPTED = 'ACCEPTED',
+  BLOCKED = 'BLOCKED',
+}
+
+interface Friend {
+  user: string;
+  status: FriendStatus;
 }
 
 export interface User {
@@ -8,10 +15,9 @@ export interface User {
   username: string | null;
   email: string;
   password?: string;
-  role: Roles;
   avatar: string | null;
   cover: string | null;
-  friends: string[];
+  friends: Friend[];
   servers: string[];
   createdAt: Date;
   updatedAt: Date;
