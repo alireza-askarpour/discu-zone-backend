@@ -17,4 +17,8 @@ export class PermissionsRepository {
   async findByName(name: string) {
     return await this.permissions.findOne({ where: { name } });
   }
+
+  async findAll() {
+    return await this.permissions.findAll();
+  }
 }

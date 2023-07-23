@@ -9,6 +9,11 @@ import { ResponseFormat } from '../../core/interfaces/response.interface';
 export class PermissionsService {
   constructor(private readonly permissionsRepository: PermissionsRepository) {}
 
+  async findAll(): Promise<ResponseFormat<any>> {
+    const permissions = await this.permissionsRepository.findAll();
+    return { statusCode: HttpStatus.CREATED, data: { permissions } };
+  }
+
   async create(input: PermissionCreateDto): Promise<ResponseFormat<any>> {
     const existPermission = await this.permissionsRepository.findByName(
       input.name,
