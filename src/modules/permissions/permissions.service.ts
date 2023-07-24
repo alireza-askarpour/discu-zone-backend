@@ -64,4 +64,23 @@ export class PermissionsService {
       message: ResponseMessages.UPDATED_PERMISSION,
     };
   }
+
+  async delete(id: string): Promise<ResponseFormat<any>> {
+    const existPermission = await this.permissionsRepository.findByPk(id);
+    if (!existPermission) {
+      throw new NotFoundException(ResponseMessages.NOT_FOUND_PERMISSION);
+    }
+
+    const deletedCount = await this.permissionsRepository.delete(id);
+    if (deletedCount !== 1) {
+      throw new InternalServerErrorException(
+        ResponseMessages.FAILED_DELETE_PERMISSION,
+      );
+    }
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: ResponseMessages.DELETED_PERMISSION,
+    };
+  }
 }

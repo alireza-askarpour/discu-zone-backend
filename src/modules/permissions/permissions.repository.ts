@@ -30,4 +30,8 @@ export class PermissionsRepository {
   async findByPk(id: string) {
     return await this.permissions.findByPk(id);
   }
+
+  async delete(id: string) {
+    return await this.permissions.destroy({ where: { id } });
+  }
 }
