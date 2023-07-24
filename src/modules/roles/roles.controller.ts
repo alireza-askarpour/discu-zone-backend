@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   Patch,
@@ -9,17 +10,21 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { RolesService } from './roles.service';
-import { RoleCreateDto } from './dtos/create-role.dto';
 import { JoiValidationPipe } from 'src/core/pipes/joi-validation.pipe';
-import { createJoiSchema } from './schemas/create-role.schema';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { ApiCreateRole } from './docs/create-role.doc';
-import { ApiGetRoles } from './docs/get-roles.doc';
-import { AuthGuard } from '@nestjs/passport';
-import { RoleUpdateDto } from './dtos/update-role.dto';
+
 import { IdDto } from 'src/core/dtos/id.dto';
+import { RoleCreateDto } from './dtos/create-role.dto';
+import { RoleUpdateDto } from './dtos/update-role.dto';
+import { createJoiSchema } from './schemas/create-role.schema';
+
+import { ApiGetRoles } from './docs/get-roles.doc';
+import { ApiCreateRole } from './docs/create-role.doc';
+import { ApiUpdateRole } from './docs/update-role.doc';
+import { ApiDeleteRole } from './docs/delete-role.doc';
 
 @ApiBearerAuth()
 @ApiTags('Roles')
@@ -44,8 +49,15 @@ export class RolesController {
 
   @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
-  @ApiCreateRole()
+  @ApiUpdateRole()
   update(@Param(ValidationPipe) { id }: IdDto, @Body() data: RoleUpdateDto) {
     return this.rolesService.update(id, data);
+  }
+
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  @ApiDeleteRole()
+  delete(@Param(ValidationPipe) { id }: IdDto) {
+    return this.rolesService.delete(id);
   }
 }

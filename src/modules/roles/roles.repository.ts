@@ -24,4 +24,8 @@ export class RolesRepository {
   async update(id: string, data: RoleUpdateDto) {
     return await this.roles.update(data, { where: { id } });
   }
+
+  async delete(id: string) {
+    return await this.roles.destroy({ where: { id } });
+  }
 }

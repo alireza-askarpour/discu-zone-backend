@@ -1,6 +1,7 @@
 import { applyDecorators } from '@nestjs/common';
 import {
   ApiBadRequestResponse,
+  ApiInternalServerErrorResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
   ApiOperation,
@@ -9,17 +10,17 @@ import {
 
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
-export const ApiUpdateRole = () => {
+export const ApiDeleteRole = () => {
   return applyDecorators(
     ApiOperation({
-      summary: 'update role',
+      summary: 'delete role',
       description: "required permissions: 'ADMINISTRATOR' or 'MANAGE_MEMBERS'",
     }),
     ApiOkResponse({
       schema: {
         example: {
           statusCode: 200,
-          message: ResponseMessages.UPDATED_ROLE,
+          message: ResponseMessages.DELETED_ROLE,
         },
       },
     }),
@@ -47,6 +48,14 @@ export const ApiUpdateRole = () => {
           statusCode: 404,
           message: ResponseMessages.NOT_FOUND_ROLE,
           error: 'Not Found',
+        },
+      },
+    }),
+    ApiInternalServerErrorResponse({
+      schema: {
+        example: {
+          statusCide: 500,
+          message: ResponseMessages.FAILED_DELETE_ROLE,
         },
       },
     }),

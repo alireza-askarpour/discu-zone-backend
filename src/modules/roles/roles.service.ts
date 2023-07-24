@@ -42,4 +42,23 @@ export class RolesService {
       message: ResponseMessages.UPDATED_ROLE,
     };
   }
+
+  async delete(id: string): Promise<ResponseFormat<any>> {
+    const existRole = await this.rolesRepository.findById(id);
+    if (!existRole) {
+      throw new NotFoundException(ResponseMessages.NOT_FOUND_ROLE);
+    }
+
+    const deletedCount = await this.rolesRepository.delete(id);
+    if (deletedCount !== 1) {
+      throw new InternalServerErrorException(
+        ResponseMessages.FAILED_DELETE_ROLE,
+      );
+    }
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: ResponseMessages.DELETED_ROLE,
+    };
+  }
 }
