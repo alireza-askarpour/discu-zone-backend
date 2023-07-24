@@ -7,6 +7,10 @@ import { RoleCreateDto } from './dtos/create-role.dto';
 export class RolesRepository {
   constructor(@Inject(ROLES_REPOSITORY) private readonly roles: typeof Roles) {}
 
+  async findAll() {
+    return await this.roles.findAll();
+  }
+
   async create(data: RoleCreateDto) {
     return await this.roles.create(data);
   }
