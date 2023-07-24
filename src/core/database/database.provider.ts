@@ -5,6 +5,7 @@ import { databaseConfig } from './database.config';
 
 import { User } from 'src/modules/users/user.entity';
 import { Permissions } from 'src/modules/permissions/permissions.entity';
+import { Roles } from 'src/modules/roles/roles.entity';
 
 export const databaseProviders = [
   {
@@ -25,7 +26,7 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      sequelize.addModels([User, Permissions]);
+      sequelize.addModels([User, Permissions, Roles]);
       await sequelize.sync();
       return sequelize;
     },
