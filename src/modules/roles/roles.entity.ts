@@ -20,12 +20,6 @@ export class Roles extends Model<Roles> {
     type: DataType.STRING,
     allowNull: false,
   })
-  description: string;
-
-  @Column({
-    type: DataType.STRING,
-    allowNull: false,
-  })
   color: string;
 
   @Column({

@@ -20,7 +20,7 @@ export const ApiCreatePermission = () => {
         example: {
           statusCode: 201,
           data: {
-            permissions: {
+            permission: {
               id: '541b06bc-2511-4964-b7ac-917fe4884111',
               name: 'ADMINISTRATOR',
               description: 'Members with this permission will have every permission',
