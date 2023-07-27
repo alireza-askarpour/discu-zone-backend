@@ -3,9 +3,12 @@ import { Sequelize } from 'sequelize-typescript';
 import { SEQUELIZE, DEVELOPMENT, TEST, PRODUCTION } from '../constants';
 import { databaseConfig } from './database.config';
 
+// Models
 import { User } from 'src/modules/users/user.entity';
 import { Permissions } from 'src/modules/permissions/permissions.entity';
 import { Roles } from 'src/modules/roles/roles.entity';
+import { Server } from 'src/modules/servers/servers.entity';
+import { Category } from 'src/modules/categories/categories.entity';
 
 export const databaseProviders = [
   {
@@ -26,7 +29,7 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      sequelize.addModels([User, Permissions, Roles]);
+      sequelize.addModels([User, Permissions, Roles, Server, Category]);
       await sequelize.sync();
       return sequelize;
     },

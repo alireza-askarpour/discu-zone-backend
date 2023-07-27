@@ -23,7 +23,7 @@ export class Roles extends Model<Roles> {
   color: string;
 
   @Column({
-    type: DataType.ARRAY(DataType.UUIDV4),
+    type: DataType.ARRAY(DataType.UUID),
     defaultValue: [],
     allowNull: false,
   })

@@ -1,7 +1,7 @@
 import { Column, DataType, Model, Table } from 'sequelize-typescript';
 
 @Table
-export class Server extends Model<Server> {
+export class Category extends Model<Category> {
   @Column({
     type: DataType.UUID,
     defaultValue: DataType.UUIDV4,
@@ -20,34 +20,29 @@ export class Server extends Model<Server> {
     type: DataType.UUID,
     allowNull: false,
   })
-  owner: string;
-
-  @Column({
-    type: DataType.STRING,
-  })
-  avatar: string;
+  server: string;
 
   @Column({
     type: DataType.ARRAY(DataType.UUID),
-    defaultValue: [],
+    allowNull: false,
   })
   channels: string[];
 
   @Column({
-    type: DataType.ARRAY(DataType.UUID),
-    defaultValue: [],
+    type: DataType.BOOLEAN,
+    defaultValue: false,
   })
-  categories: string[];
-
-  @Column({
-    type: DataType.ARRAY(DataType.UUID),
-    defaultValue: [],
-  })
-  members: string[];
+  private: boolean;
 
   @Column({
     type: DataType.ARRAY(DataType.UUID),
     defaultValue: [],
   })
   roles: string[];
+
+  @Column({
+    type: DataType.ARRAY(DataType.UUID),
+    defaultValue: [],
+  })
+  members: string[];
 }

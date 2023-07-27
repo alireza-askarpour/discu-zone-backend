@@ -6,7 +6,8 @@ import { UsersModule } from './modules/users/users.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { PermissionsModule } from './modules/permissions/permissions.module';
 import { RolesModule } from './modules/roles/roles.module';
-import { ServerModule } from './modules/server/server.module';
+import { ServersModule } from './modules/servers/servers.module';
+import { CategoriesModule } from './modules/categories/categories.module';
 
 @Module({
   imports: [
@@ -19,7 +20,8 @@ import { ServerModule } from './modules/server/server.module';
     AuthModule,
     PermissionsModule,
     RolesModule,
-    ServerModule,
+    ServersModule,
+    CategoriesModule,
   ],
   controllers: [],
   providers: [],
