@@ -34,10 +34,16 @@ export default (): Configs => ({
   BEARER: process.env.BEARER,
 });
 
-const configService: ConfigService<Configs> = new ConfigService<Configs>();
+export const configService: ConfigService<Configs> =
+  new ConfigService<Configs>();
+
+export const isProduction = configService.get('NODE_ENV') || 'development';
+export const isDevelopment = configService.get('NODE_ENV') || 'development';
 
 export const port = configService.get('PORT') || 3000;
 export const mode = configService.get('NODE_ENV') || 'development';
+
+export const documentRoute = '/api-docs';
 
 export const appListener = () => {
   const runningMode = `Server running in ${bold(mode)} mode`;
@@ -45,3 +51,6 @@ export const appListener = () => {
   const runningSince = `[since ${new Date().toISOString()}]`;
   console.log(`🏁 —> ${runningMode} ${runningOnPort} ${runningSince}`);
 };
+
+const devApiUrl = `http://localhost:${port}${documentRoute}`;
+export const resApiUrl = `🏁 —> RestApi: ${bold(devApiUrl)}`;
