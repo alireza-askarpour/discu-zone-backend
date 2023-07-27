@@ -40,7 +40,10 @@ export class CategoriesService {
         throw new NotFoundException(ResponseMessages.NOT_FOUND_CATEGORY);
       }
 
-      const [updateCount] = await this.categoriesRepository.update(id, data);
+      const [updateCount] = await this.categoriesRepository.updateById(
+        id,
+        data,
+      );
       if (updateCount !== 1) {
         throw new InternalServerErrorException(
           ResponseMessages.FAILED_UPDATE_CATEGORY,
@@ -50,6 +53,29 @@ export class CategoriesService {
       return {
         statusCode: HttpStatus.OK,
         message: ResponseMessages.UPDATED_CATEGORY,
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
+  }
+
+  async delete(id: string): Promise<ResponseFormat<any>> {
+    try {
+      const existCategory = await this.categoriesRepository.findById(id);
+      if (!existCategory) {
+        throw new NotFoundException(ResponseMessages.NOT_FOUND_CATEGORY);
+      }
+
+      const deletedCount = await this.categoriesRepository.deleteById(id);
+      if (deletedCount !== 1) {
+        throw new InternalServerErrorException(
+          ResponseMessages.FAILED_DELETE_CATEGORY,
+        );
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: ResponseMessages.DELETED_CATEGORY,
       };
     } catch (err) {
       throw new InternalServerErrorException(err.message);

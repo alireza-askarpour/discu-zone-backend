@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Param,
   Patch,
   Post,
@@ -21,6 +22,8 @@ import { CategoryCreateDto } from './dtos/create-category.dto';
 import { CategoryUpdateDto } from './dtos/update-category.dto';
 
 import { ApiCreateCategory } from './docs/create-category.doc';
+import { ApiUpdateCategory } from './docs/update-category.doc';
+import { ApiDeleteCategory } from './docs/delete-category.doc';
 
 @ApiBearerAuth()
 @ApiTags('Categories')
@@ -36,11 +39,20 @@ export class CategoriesController {
     return this.categoriesService.create(data);
   }
 
+  @ApiUpdateCategory()
+  @UseGuards(AuthGuard('jwt'))
   @Patch(':id')
   update(
     @Param(ValidationPipe) { id }: IdDto,
     @Body() data: CategoryUpdateDto,
   ) {
     return this.categoriesService.update(id, data);
+  }
+
+  @ApiDeleteCategory()
+  @UseGuards(AuthGuard('jwt'))
+  @Delete(':id')
+  delete(@Param(ValidationPipe) { id }: IdDto) {
+    return this.categoriesService.delete(id);
   }
 }

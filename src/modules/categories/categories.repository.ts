@@ -17,11 +17,15 @@ export class CategoriesRepository {
     return this.categoryModel.create(data);
   }
 
-  update(id: string, data: CategoryUpdateDto) {
+  updateById(id: string, data: CategoryUpdateDto) {
     return this.categoryModel.update(data, { where: { id } });
   }
 
   findById(id: string) {
     return this.categoryModel.findByPk(id);
+  }
+
+  deleteById(id: string) {
+    return this.categoryModel.destroy({ where: { id } });
   }
 }

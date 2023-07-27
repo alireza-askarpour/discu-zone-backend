@@ -10,7 +10,7 @@ export const ApiCreateCategory = () => {
   return applyDecorators(
     ApiOperation({
       summary: 'create category',
-      description: "required permissions: 'ADMINISTRATOR' or 'MANAGE_MEMBERS'",
+      description: "required permissions: 'ADMINISTRATOR'",
     }),
     ApiCreatedResponse({
       schema: {
