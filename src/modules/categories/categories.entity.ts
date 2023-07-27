@@ -24,13 +24,14 @@ export class Category extends Model<Category> {
 
   @Column({
     type: DataType.ARRAY(DataType.UUID),
-    allowNull: false,
+    defaultValue: [],
   })
   channels: string[];
 
   @Column({
     type: DataType.BOOLEAN,
     defaultValue: false,
+    allowNull: false,
   })
   private: boolean;
 
