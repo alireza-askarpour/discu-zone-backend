@@ -2,10 +2,16 @@ import {
   HttpStatus,
   Injectable,
   InternalServerErrorException,
+  NotFoundException,
 } from '@nestjs/common';
+
 import { CategoriesRepository } from './categories.repository';
+
 import { CategoryCreateDto } from './dtos/create-category.dto';
+import { CategoryUpdateDto } from './dtos/update-category.dto';
+
 import { ResponseFormat } from 'src/core/interfaces/response.interface';
+import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 @Injectable()
 export class CategoriesService {
@@ -14,11 +20,36 @@ export class CategoriesService {
   async create(data: CategoryCreateDto): Promise<ResponseFormat<any>> {
     try {
       const createdCategory = await this.categoriesRepository.create(data);
-      console.log(createdCategory);
 
       return {
         statusCode: HttpStatus.CREATED,
         data: { category: createdCategory },
+      };
+    } catch (err) {
+      throw new InternalServerErrorException(err.message);
+    }
+  }
+
+  async update(
+    id: string,
+    data: CategoryUpdateDto,
+  ): Promise<ResponseFormat<any>> {
+    try {
+      const existCategory = await this.categoriesRepository.findById(id);
+      if (!existCategory) {
+        throw new NotFoundException(ResponseMessages.NOT_FOUND_CATEGORY);
+      }
+
+      const [updateCount] = await this.categoriesRepository.update(id, data);
+      if (updateCount !== 1) {
+        throw new InternalServerErrorException(
+          ResponseMessages.FAILED_UPDATE_CATEGORY,
+        );
+      }
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: ResponseMessages.UPDATED_CATEGORY,
       };
     } catch (err) {
       throw new InternalServerErrorException(err.message);

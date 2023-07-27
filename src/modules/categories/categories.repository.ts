@@ -1,7 +1,10 @@
 import { Inject, Injectable } from '@nestjs/common';
+
 import { Category } from './categories.entity';
 import { CATEGORY_REPOSITORY } from 'src/core/constants';
+
 import { CategoryCreateDto } from './dtos/create-category.dto';
+import { CategoryUpdateDto } from './dtos/update-category.dto';
 
 @Injectable()
 export class CategoriesRepository {
@@ -12,5 +15,13 @@ export class CategoriesRepository {
 
   create(data: CategoryCreateDto) {
     return this.categoryModel.create(data);
+  }
+
+  update(id: string, data: CategoryUpdateDto) {
+    return this.categoryModel.update(data, { where: { id } });
+  }
+
+  findById(id: string) {
+    return this.categoryModel.findByPk(id);
   }
 }
