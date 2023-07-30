@@ -3,13 +3,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
 
 import { AppModule } from './app.module';
-import {
-  port,
-  appListener,
-  isDevelopment,
-  documentRoute,
-  resApiUrl,
-} from './core/config/app.config';
+import { port, appListener, isDevelopment } from './core/config/app.config';
 import { SwaggerConfig } from './core/config/swagger.config';
 
 async function bootstrap() {
@@ -23,7 +17,5 @@ async function bootstrap() {
   if (isDevelopment) SwaggerConfig(app);
 
   await app.listen(port, appListener);
-
-  console.log(resApiUrl);
 }
 bootstrap();

@@ -1,6 +1,6 @@
-import { ConfigService } from '@nestjs/config';
-import * as process from 'process';
 import { bold } from 'chalk';
+import * as process from 'process';
+import { ConfigService } from '@nestjs/config';
 
 export interface Configs {
   PORT: number;
@@ -37,8 +37,8 @@ export default (): Configs => ({
 export const configService: ConfigService<Configs> =
   new ConfigService<Configs>();
 
-export const isProduction = configService.get('NODE_ENV') || 'development';
-export const isDevelopment = configService.get('NODE_ENV') || 'development';
+export const isProduction = configService.get('NODE_ENV') === 'development';
+export const isDevelopment = configService.get('NODE_ENV') === 'development';
 
 export const port = configService.get('PORT') || 3000;
 export const mode = configService.get('NODE_ENV') || 'development';
@@ -50,7 +50,7 @@ export const appListener = () => {
   const runningOnPort = `on port ${bold(port)}`;
   const runningSince = `[since ${new Date().toISOString()}]`;
   console.log(`🏁 —> ${runningMode} ${runningOnPort} ${runningSince}`);
+  if (isDevelopment) console.log(
+    `🏁 —> RestApi: ${bold(`http://localhost:${port}${documentRoute}`)}`,
+  );
 };
-
-const devApiUrl = `http://localhost:${port}${documentRoute}`;
-export const resApiUrl = `🏁 —> RestApi: ${bold(devApiUrl)}`;
