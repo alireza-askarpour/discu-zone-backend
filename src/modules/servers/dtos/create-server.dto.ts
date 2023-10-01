@@ -8,4 +8,6 @@ export class ServerCreateDto {
     default: 'Tech immigrants',
   })
   name: string;
+
+  owner: string;
 }

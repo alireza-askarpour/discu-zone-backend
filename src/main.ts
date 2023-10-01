@@ -1,10 +1,10 @@
 import { NestFactory } from '@nestjs/core';
-import { NestExpressApplication } from '@nestjs/platform-express';
 import { ValidationPipe } from '@nestjs/common';
+import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
-import { port, appListener, isDevelopment } from './core/config/app.config';
 import { SwaggerConfig } from './core/config/swagger.config';
+import { port, appListener, isDevelopment } from './core/config/app.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
