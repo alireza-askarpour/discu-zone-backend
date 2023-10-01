@@ -1,6 +1,6 @@
 import { Request } from 'express';
-import { Body, Controller, Param, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Param, Req } from '@nestjs/common';
 
 import { ServersService } from './servers.service';
 import { ServerCreateDto } from './dtos/create-server.dto';

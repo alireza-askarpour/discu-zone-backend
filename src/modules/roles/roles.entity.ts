@@ -34,10 +34,4 @@ export class Roles extends Model<Roles> {
     allowNull: false,
   })
   server: string;
-
-  @Column({
-    type: DataType.UUID,
-    allowNull: false,
-  })
-  channel: string;
 }

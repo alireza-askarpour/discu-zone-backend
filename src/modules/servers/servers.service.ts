@@ -1,9 +1,10 @@
 import { HttpStatus, Injectable } from '@nestjs/common';
 import { ServersRepository } from './servers.repository';
+
 import { ServerCreateDto } from './dtos/create-server.dto';
+import { ServerUpdateDto } from './dtos/update-server.dto';
 import { ResponseFormat } from 'src/core/interfaces/response.interface';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
-import { ServerUpdateDto } from './dtos/update-server.dto';
 
 @Injectable()
 export class ServersService {

@@ -5,5 +5,4 @@ export const createJoiSchema = joi.object({
   color: joi.string().required(),
   permissions: joi.array().items(joi.string()).required(),
   server: joi.string().required(),
-  channel: joi.string().required(),
 });

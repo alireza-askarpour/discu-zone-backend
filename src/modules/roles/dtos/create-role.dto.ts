@@ -35,12 +35,4 @@ export class RoleCreateDto {
     example: '9e610e93-869c-4750-8be0-be2e33343bf1',
   })
   server: string;
-
-  @ApiProperty({
-    description: 'The channel of role. channel should be uuid',
-    required: true,
-    type: String,
-    example: '900e378b-f681-403c-9eb1-455c52e55bd6',
-  })
-  channel: string;
 }
