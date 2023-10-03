@@ -1,16 +1,16 @@
 import {
-  BadRequestException,
+  Injectable,
   CanActivate,
   ExecutionContext,
   ForbiddenException,
-  Injectable,
+  BadRequestException,
 } from '@nestjs/common';
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
 import { UsersService } from 'src/modules/users/users.service';
-import { ResponseMessages } from '../constants/response-messages.constant';
 import { emailPattern } from '../constants/pattern.constant';
+import { ResponseMessages } from '../constants/response-messages.constant';
 
 @Injectable()
 export class DoesUserExist implements CanActivate {

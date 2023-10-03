@@ -8,5 +8,6 @@ import { ServersRepository } from './servers.repository';
   imports: [],
   providers: [ServersRepository, ServersService, ...serversProviders],
   controllers: [ServersController],
+  exports: [ServersRepository],
 })
 export class ServersModule {}

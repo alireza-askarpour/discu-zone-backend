@@ -9,6 +9,7 @@ import { RolesModule } from './modules/roles/roles.module';
 import { ServersModule } from './modules/servers/servers.module';
 import { CategoriesModule } from './modules/categories/categories.module';
 import { FileModule } from './modules/file/file.module';
+import { InvitesModule } from './modules/invites/invites.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { FileModule } from './modules/file/file.module';
     ServersModule,
     CategoriesModule,
     FileModule,
+    InvitesModule,
   ],
   controllers: [],
   providers: [],

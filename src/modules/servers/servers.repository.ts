@@ -17,4 +17,8 @@ export class ServersRepository {
   update(id: string, data: ServerUpdateDto) {
     return this.serverModel.update(data, { where: { id } });
   }
+
+  findById(id: string) {
+    return this.serverModel.findOne({ where: { id } });
+  }
 }
