@@ -1,4 +1,4 @@
-import { User as _User } from '../interfaces/user.interface';
+import { User as _User } from '../../modules/users/user.entity';
 
 declare global {
   namespace Express {

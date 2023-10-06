@@ -1,6 +1,6 @@
-import { Request as _Request } from 'express';
+import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Request, Controller, UnauthorizedException } from '@nestjs/common';
+import { Controller, UnauthorizedException, Req } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { GetMeDecorator } from './decorators/get-me.decorator';
@@ -13,7 +13,7 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @GetMeDecorator()
-  async getMe(@Request() req: _Request) {
+  async getMe(@Req() req: Request) {
     if (!req.user) {
       throw new UnauthorizedException(ResponseMessages.UNAUTHORIZED);
     }
