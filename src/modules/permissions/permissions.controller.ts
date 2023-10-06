@@ -8,10 +8,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 
 import { PermissionsService } from './permissions.service';
-import { JoiValidationPipe } from 'src/core/pipes/joi-validation.pipe';
+import { JoiValidationPipe } from 'src/common/pipes/joi-validation.pipe';
 import { createPermissionSchema } from './schemas/create-permission.schema';
 
-import { IdDto } from 'src/core/dtos/id.dto';
+import { IdDto } from 'src/common/dtos/id.dto';
 import { PermissionCreateDto } from './dtos/create-permission.dto';
 import { PermissionUpdateDto } from './dtos/update-permission.dto';
 

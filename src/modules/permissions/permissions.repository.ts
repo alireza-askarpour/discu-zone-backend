@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Permissions } from './permissions.entity';
-import { PERMISSIONS_REPOSITORY } from 'src/core/constants';
+import { PERMISSIONS_REPOSITORY } from 'src/common/constants';
 import { PermissionCreateDto } from './dtos/create-permission.dto';
 import { PermissionUpdateDto } from './dtos/update-permission.dto';
 

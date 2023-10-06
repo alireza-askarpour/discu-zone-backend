@@ -2,7 +2,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { Post, UseGuards, UsePipes, applyDecorators } from '@nestjs/common';
 
 import { ApiCreateCategory } from '../docs/create-category.doc';
-import { JoiValidationPipe } from 'src/core/pipes/joi-validation.pipe';
+import { JoiValidationPipe } from 'src/common/pipes/joi-validation.pipe';
 import { createCategorySchema } from '../schemas/create-category.schema';
 
 export const CreateCategoryDecoratpr = () => {

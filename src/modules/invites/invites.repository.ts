@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Invite } from './invite.entity';
-import { INVITE_REPOSITORY } from 'src/core/constants';
+import { INVITE_REPOSITORY } from 'src/common/constants';
 import { InviteCreateDto } from './dtos/create-invite.dto';
 import {
   nanoid,
   alphabetNumber,
   alphabetLetters,
-} from 'src/core/utils/nanoid.util';
+} from 'src/common/utils/nanoid.util';
 
 @Injectable()
 export class InvitesRepository {

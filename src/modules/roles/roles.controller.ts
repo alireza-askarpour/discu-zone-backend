@@ -9,9 +9,9 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { RolesService } from './roles.service';
 import { createJoiSchema } from './schemas/create-role.schema';
-import { JoiValidationPipe } from 'src/core/pipes/joi-validation.pipe';
+import { JoiValidationPipe } from 'src/common/pipes/joi-validation.pipe';
 
-import { IdDto } from 'src/core/dtos/id.dto';
+import { IdDto } from 'src/common/dtos/id.dto';
 import { RoleCreateDto } from './dtos/create-role.dto';
 import { RoleUpdateDto } from './dtos/update-role.dto';
 

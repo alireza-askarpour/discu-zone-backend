@@ -1,5 +1,5 @@
 import { Server } from './servers.entity';
-import { SERVER_REPOSITORY } from 'src/core/constants';
+import { SERVER_REPOSITORY } from 'src/common/constants';
 
 export const serversProviders = [
   {

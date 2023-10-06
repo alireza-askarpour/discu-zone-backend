@@ -1,5 +1,5 @@
 import { Permissions } from './permissions.entity';
-import { PERMISSIONS_REPOSITORY } from 'src/core/constants';
+import { PERMISSIONS_REPOSITORY } from 'src/common/constants';
 
 export const permissionsProviders = [
   {

@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Server } from './servers.entity';
-import { SERVER_REPOSITORY } from 'src/core/constants';
+import { SERVER_REPOSITORY } from 'src/common/constants';
 import { ServerCreateDto } from './dtos/create-server.dto';
 
 @Injectable()

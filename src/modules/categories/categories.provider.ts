@@ -1,5 +1,5 @@
 import { Category } from './categories.entity';
-import { CATEGORY_REPOSITORY } from 'src/core/constants';
+import { CATEGORY_REPOSITORY } from 'src/common/constants';
 
 export const categoriesProviders = [
   {

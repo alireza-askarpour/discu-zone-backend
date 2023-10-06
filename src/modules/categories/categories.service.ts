@@ -10,8 +10,8 @@ import { CategoriesRepository } from './categories.repository';
 import { CategoryCreateDto } from './dtos/create-category.dto';
 import { CategoryUpdateDto } from './dtos/update-category.dto';
 
-import { ResponseFormat } from 'src/core/interfaces/response.interface';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
+import { ResponseFormat } from 'src/common/interfaces/response.interface';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @Injectable()
 export class CategoriesService {

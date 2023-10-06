@@ -11,8 +11,8 @@ import { ServersRepository } from './servers.repository';
 
 import { ServerCreateDto } from './dtos/create-server.dto';
 import { ServerUpdateDto } from './dtos/update-server.dto';
-import { ResponseFormat } from 'src/core/interfaces/response.interface';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
+import { ResponseFormat } from 'src/common/interfaces/response.interface';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @Injectable()
 export class ServersService {

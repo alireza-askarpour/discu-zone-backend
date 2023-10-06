@@ -4,8 +4,8 @@ import { InvitesRepository } from './invites.repository';
 import { ServersRepository } from '../servers/servers.repository';
 
 import { InviteCreateDto } from './dtos/create-invite.dto';
-import { ResponseFormat } from 'src/core/interfaces/response.interface';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
+import { ResponseFormat } from 'src/common/interfaces/response.interface';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @Injectable()
 export class InvitesService {

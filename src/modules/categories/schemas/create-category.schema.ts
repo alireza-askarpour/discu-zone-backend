@@ -1,5 +1,5 @@
 import * as joi from 'joi';
-import { uuidv4Pattern } from 'src/core/constants/pattern.constant';
+import { uuidv4Pattern } from 'src/common/constants/pattern.constant';
 
 export const createCategorySchema = joi.object({
   name: joi.string().required(),

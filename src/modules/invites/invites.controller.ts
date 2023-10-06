@@ -4,11 +4,11 @@ import { Body, Controller, Param } from '@nestjs/common';
 import { InvitesService } from './invites.service';
 import { createInviteSchema } from './schemas/create-invite.schema';
 
-import { GetUser } from 'src/core/decorators/get-user-param.decorator';
+import { GetUser } from 'src/common/decorators/get-user-param.decorator';
 import { CreateInviteDecorator } from './decorators/create-invite.decorator';
 
 import { InviteCreateDto } from './dtos/create-invite.dto';
-import { joiValidator } from 'src/core/utils/joi-validator.util';
+import { joiValidator } from 'src/common/utils/joi-validator.util';
 
 @ApiBearerAuth()
 @ApiTags('Invites')

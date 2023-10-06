@@ -7,8 +7,8 @@ import {
 import { RolesRepository } from './roles.repository';
 import { RoleCreateDto } from './dtos/create-role.dto';
 import { RoleUpdateDto } from './dtos/update-role.dto';
-import { ResponseFormat } from 'src/core/interfaces/response.interface';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
+import { ResponseFormat } from 'src/common/interfaces/response.interface';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @Injectable()
 export class RolesService {

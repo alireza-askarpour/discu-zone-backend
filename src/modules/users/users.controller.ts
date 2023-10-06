@@ -4,7 +4,7 @@ import { Controller, UnauthorizedException, Req } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { GetMeDecorator } from './decorators/get-me.decorator';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @ApiBearerAuth()
 @ApiTags('Users')

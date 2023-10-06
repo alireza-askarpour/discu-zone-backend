@@ -1,5 +1,5 @@
 import { Invite } from './invite.entity';
-import { INVITE_REPOSITORY } from 'src/core/constants';
+import { INVITE_REPOSITORY } from 'src/common/constants';
 
 export const invitesProviders = [
   {

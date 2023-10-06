@@ -7,7 +7,7 @@ import {
   ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
 import { applyDecorators } from '@nestjs/common';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 export const ApiDeleteAvatar = () => {
   return applyDecorators(

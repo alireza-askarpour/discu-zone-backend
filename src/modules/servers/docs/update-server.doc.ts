@@ -1,6 +1,6 @@
 import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { ApiOkResponse, ApiOperation } from '@nestjs/swagger';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 export const ApiUpdateServer = () => {
   return applyDecorators(

@@ -8,10 +8,10 @@ import {
 
 import { PermissionsRepository } from './permissions.repository';
 import { PermissionCreateDto } from './dtos/create-permission.dto';
-import { ResponseMessages } from 'src/core/constants/response-messages.constant';
-import { ResponseFormat } from '../../core/interfaces/response.interface';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
+import { ResponseFormat } from '../../common/interfaces/response.interface';
 import { PermissionUpdateDto } from './dtos/update-permission.dto';
-import { IdDto } from 'src/core/dtos/id.dto';
+import { IdDto } from 'src/common/dtos/id.dto';
 
 @Injectable()
 export class PermissionsService {

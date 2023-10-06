@@ -3,7 +3,7 @@ import { Body, Controller, Param, ValidationPipe } from '@nestjs/common';
 
 import { CategoriesService } from './categories.service';
 
-import { IdDto } from 'src/core/dtos/id.dto';
+import { IdDto } from 'src/common/dtos/id.dto';
 import { CategoryCreateDto } from './dtos/create-category.dto';
 import { CategoryUpdateDto } from './dtos/update-category.dto';
 
