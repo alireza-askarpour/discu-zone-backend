@@ -14,7 +14,7 @@ export class ServersRepository {
     return this.serverModel.create(data);
   }
 
-  update(id: string, data: ServerUpdateDto) {
+  updateById(id: string, data: Partial<Server>) {
     return this.serverModel.update(data, { where: { id } });
   }
 

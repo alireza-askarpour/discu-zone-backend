@@ -1,24 +1,13 @@
 import { Injectable } from '@nestjs/common';
-import { promises as fs, constants, Stats } from 'fs';
+import { existsSync, unlinkSync } from 'fs';
 
 @Injectable()
 export class FileService {
-  async checkFileExists(filePath: string): Promise<boolean> {
-    try {
-      await fs.access(filePath, constants.F_OK);
-      return true;
-    } catch (e) {
-      return false;
-    }
+  checkFileExists(filePath: string) {
+    return existsSync(filePath);
   }
 
-  async removeByPath(pathFile: string): Promise<void> {
-    try {
-      await fs.unlink(pathFile);
-    } catch (error) {}
-  }
-
-  async getStat(targetPath: string): Promise<Stats> {
-    return fs.stat(targetPath);
+  removeByPath(filePath: string) {
+    if (existsSync(filePath)) unlinkSync(filePath);
   }
 }
