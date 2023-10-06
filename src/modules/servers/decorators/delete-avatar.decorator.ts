@@ -1,11 +1,11 @@
 import { AuthGuard } from '@nestjs/passport';
+import { ApiDeleteAvatar } from '../docs/delete-avatar.doc';
 import { Patch, UseGuards, applyDecorators } from '@nestjs/common';
-import { ApiUpdateServer } from '../docs/update-server.doc';
 
-export const UpdateServerDecorator = () => {
+export const DeleteAvatarDecorator = () => {
   return applyDecorators(
-    Patch(':id'),
-    ApiUpdateServer(),
     UseGuards(AuthGuard('jwt')),
+    ApiDeleteAvatar(),
+    Patch('delete-avatar/:id'),
   );
 };

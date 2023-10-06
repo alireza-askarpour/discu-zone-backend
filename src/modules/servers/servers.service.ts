@@ -5,13 +5,14 @@ import {
   BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+
+import { FileService } from '../file/file.service';
 import { ServersRepository } from './servers.repository';
 
 import { ServerCreateDto } from './dtos/create-server.dto';
 import { ServerUpdateDto } from './dtos/update-server.dto';
 import { ResponseFormat } from 'src/core/interfaces/response.interface';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
-import { FileService } from '../file/file.service';
 
 @Injectable()
 export class ServersService {
@@ -86,5 +87,32 @@ export class ServersService {
       this.fileService.removeByPath(path);
       throw err;
     }
+  }
+
+  async deleteAvatar(id: string): Promise<ResponseFormat<any>> {
+    // check exist server
+    const existServer = await this.serversRepository.findById(id);
+    if (!existServer) {
+      throw new NotFoundException(ResponseMessages.NOT_FOUND_SERVER);
+    }
+
+    // check exist and deleve prev avatar from file system
+    if (existServer?.avatar) {
+      this.fileService.removeByPath(existServer.avatar);
+    }
+
+    const [updateCount] = await this.serversRepository.updateById(id, {
+      avatar: null,
+    });
+    if (updateCount !== 1) {
+      throw new InternalServerErrorException(
+        ResponseMessages.FAILED_DELETE_AVATAR,
+      );
+    }
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: ResponseMessages.AVATAR_DELETED_SUCCESS,
+    };
   }
 }

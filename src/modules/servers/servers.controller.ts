@@ -8,6 +8,7 @@ import { ServerCreateDto } from './dtos/create-server.dto';
 import { CreateServerDecorator } from './decorators/create-server.decorator';
 import { UpdateServerDecorator } from './decorators/update-server.decorator';
 import { UploadAvatarDecorator } from './decorators/upload-avatar.decorator';
+import { DeleteAvatarDecorator } from './decorators/delete-avatar.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Servers')
@@ -32,5 +33,10 @@ export class ServersController {
     @UploadedFile() file: Express.Multer.File,
   ) {
     return this.serversService.uploadAvatar(id, file);
+  }
+
+  @DeleteAvatarDecorator()
+  deleteAvatar(@Param('id') id: string) {
+    return this.serversService.deleteAvatar(id);
   }
 }
