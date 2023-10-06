@@ -1,12 +1,11 @@
-import { applyDecorators } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiInternalServerErrorResponse,
   ApiOperation,
+  ApiCreatedResponse,
+  ApiBadRequestResponse,
   ApiUnauthorizedResponse,
+  ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
-
+import { applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 export const ApiCreatePermission = () => {
@@ -23,7 +22,8 @@ export const ApiCreatePermission = () => {
             permission: {
               id: '541b06bc-2511-4964-b7ac-917fe4884111',
               name: 'ADMINISTRATOR',
-              description: 'Members with this permission will have every permission',
+              description:
+                'Members with this permission will have every permission',
               updatedAt: '2023-07-23T19:51:46.061Z',
               createdAt: '2023-07-23T19:51:46.061Z',
             },

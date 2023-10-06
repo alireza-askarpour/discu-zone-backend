@@ -12,7 +12,7 @@ async function bootstrap() {
   });
 
   app.useGlobalPipes(new ValidationPipe());
-  app.setGlobalPrefix('v1');
+  app.setGlobalPrefix('api');
 
   if (isDevelopment) SwaggerConfig(app);
 

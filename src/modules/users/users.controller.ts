@@ -1,17 +1,9 @@
-import {
-  Controller,
-  Get,
-  HttpStatus,
-  Request,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { Request as _Request } from 'express';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Request, Controller, UnauthorizedException } from '@nestjs/common';
 
-import { ApiGetMe } from './docs/get-me.doc';
 import { UsersService } from './users.service';
+import { GetMeDecorator } from './decorators/get-me.decorator';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 @ApiBearerAuth()
@@ -20,9 +12,7 @@ import { ResponseMessages } from 'src/core/constants/response-messages.constant'
 export class UsersController {
   constructor(private userService: UsersService) {}
 
-  @ApiGetMe()
-  @UseGuards(AuthGuard('jwt'))
-  @Get('@me')
+  @GetMeDecorator()
   async getMe(@Request() req: _Request) {
     if (!req.user) {
       throw new UnauthorizedException(ResponseMessages.UNAUTHORIZED);

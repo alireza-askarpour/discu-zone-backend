@@ -1,12 +1,9 @@
-import { applyDecorators } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
-  ApiCreatedResponse,
-  ApiInternalServerErrorResponse,
   ApiOperation,
+  ApiCreatedResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-
+import { applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 export const ApiGetPermissions = () => {

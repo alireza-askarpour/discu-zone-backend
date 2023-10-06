@@ -1,19 +1,20 @@
-import { HttpStatus, Injectable } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
 import { JwtService } from '@nestjs/jwt';
-import { UsersService } from '../users/users.service';
+import { HttpStatus, Injectable } from '@nestjs/common';
+
 import { SignUpDto } from './dtos/signup.dto';
+import { UsersRepository } from '../users/users.repository';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly userService: UsersService,
+    private readonly usersRepository: UsersRepository,
     private readonly jwtService: JwtService,
   ) {}
 
   async validateUser(email: string, pass: string) {
     // find if user exist with this email
-    const user = await this.userService.findOneByEmail(email);
+    const user = await this.usersRepository.findOneByEmail(email);
     if (!user) return null;
 
     // find if user password match
@@ -31,7 +32,10 @@ export class AuthService {
 
   public async create(user: SignUpDto) {
     const pass = await this.hashPassword(user.password);
-    const newUser = await this.userService.create({ ...user, password: pass });
+    const newUser = await this.usersRepository.create({
+      ...user,
+      password: pass,
+    });
     const { password, ...result } = newUser['dataValues'];
     const token = await this.generateToken({
       email: result.email,

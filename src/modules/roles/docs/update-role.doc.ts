@@ -1,12 +1,11 @@
-import { applyDecorators } from '@nestjs/common';
 import {
-  ApiBadRequestResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
+  ApiOkResponse,
+  ApiNotFoundResponse,
+  ApiBadRequestResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
-
+import { applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 export const ApiUpdateRole = () => {

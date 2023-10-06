@@ -1,10 +1,9 @@
-import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
-  ApiInternalServerErrorResponse,
-  ApiOkResponse,
   ApiOperation,
+  ApiOkResponse,
   ApiUnauthorizedResponse,
 } from '@nestjs/swagger';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 export const ApiGetMe = () => {
@@ -38,15 +37,6 @@ export const ApiGetMe = () => {
           statusCode: HttpStatus.UNAUTHORIZED,
           message: ResponseMessages.UNAUTHORIZED,
           error: 'Unauthorized',
-        },
-      },
-    }),
-    ApiInternalServerErrorResponse({
-      schema: {
-        example: {
-          statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: ResponseMessages.INTERNAL_SERVER_ERROR,
-          error: 'Internal Server Error',
         },
       },
     }),

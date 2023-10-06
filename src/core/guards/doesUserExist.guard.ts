@@ -8,13 +8,13 @@ import {
 import { Request } from 'express';
 import { Observable } from 'rxjs';
 
-import { UsersService } from 'src/modules/users/users.service';
+import { UsersRepository } from 'src/modules/users/users.repository';
 import { emailPattern } from '../constants/pattern.constant';
 import { ResponseMessages } from '../constants/response-messages.constant';
 
 @Injectable()
 export class DoesUserExist implements CanActivate {
-  constructor(private readonly userService: UsersService) {}
+  constructor(private readonly usersRepository: UsersRepository) {}
 
   canActivate(
     context: ExecutionContext,
@@ -29,7 +29,9 @@ export class DoesUserExist implements CanActivate {
       throw new BadRequestException(ResponseMessages.INVALID_EMAIL);
     }
 
-    const userExist = await this.userService.findOneByEmail(request.body.email);
+    const userExist = await this.usersRepository.findOneByEmail(
+      request.body.email,
+    );
     if (userExist) {
       throw new ForbiddenException(ResponseMessages.EMAIL_ALREADY_EXIST);
     }

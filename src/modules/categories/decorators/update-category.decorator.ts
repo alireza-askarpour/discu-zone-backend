@@ -1,11 +1,11 @@
 import { AuthGuard } from '@nestjs/passport';
 import { Patch, UseGuards, applyDecorators } from '@nestjs/common';
-import { ApiUpdateServer } from '../docs/update-server.doc';
+import { ApiUpdateCategory } from '../docs/update-category.doc';
 
-export const UpdateServerDecorator = () => {
+export const UpdateCategoryDecorator = () => {
   return applyDecorators(
+    ApiUpdateCategory(),
     UseGuards(AuthGuard('jwt')),
-    ApiUpdateServer(),
     Patch(':id'),
   );
 };

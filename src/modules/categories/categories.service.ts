@@ -1,8 +1,8 @@
 import {
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 
 import { CategoriesRepository } from './categories.repository';

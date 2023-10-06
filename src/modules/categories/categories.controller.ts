@@ -1,29 +1,15 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Param,
-  Patch,
-  Post,
-  UseGuards,
-  UsePipes,
-  ValidationPipe,
-} from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Param, ValidationPipe } from '@nestjs/common';
 
 import { CategoriesService } from './categories.service';
-
-import { JoiValidationPipe } from 'src/core/pipes/joi-validation.pipe';
-import { createCategorySchema } from './schemas/create-category.schema';
 
 import { IdDto } from 'src/core/dtos/id.dto';
 import { CategoryCreateDto } from './dtos/create-category.dto';
 import { CategoryUpdateDto } from './dtos/update-category.dto';
 
-import { ApiCreateCategory } from './docs/create-category.doc';
-import { ApiUpdateCategory } from './docs/update-category.doc';
-import { ApiDeleteCategory } from './docs/delete-category.doc';
+import { CreateCategoryDecoratpr } from './decorators/create-category.decorator';
+import { UpdateCategoryDecorator } from './decorators/update-category.decorator';
+import { DeleteCategoryDecorator } from './decorators/delete-category.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Categories')
@@ -31,17 +17,12 @@ import { ApiDeleteCategory } from './docs/delete-category.doc';
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
 
-  @ApiCreateCategory()
-  @UseGuards(AuthGuard('jwt'))
-  @UsePipes(new JoiValidationPipe(createCategorySchema))
-  @Post()
+  @CreateCategoryDecoratpr()
   create(@Body() data: CategoryCreateDto) {
     return this.categoriesService.create(data);
   }
 
-  @ApiUpdateCategory()
-  @UseGuards(AuthGuard('jwt'))
-  @Patch(':id')
+  @UpdateCategoryDecorator()
   update(
     @Param(ValidationPipe) { id }: IdDto,
     @Body() data: CategoryUpdateDto,
@@ -49,9 +30,7 @@ export class CategoriesController {
     return this.categoriesService.update(id, data);
   }
 
-  @ApiDeleteCategory()
-  @UseGuards(AuthGuard('jwt'))
-  @Delete(':id')
+  @DeleteCategoryDecorator()
   delete(@Param(ValidationPipe) { id }: IdDto) {
     return this.categoriesService.delete(id);
   }

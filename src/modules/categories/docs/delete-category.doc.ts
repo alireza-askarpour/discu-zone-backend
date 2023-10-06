@@ -1,12 +1,11 @@
-import { HttpStatus, applyDecorators } from '@nestjs/common';
 import {
-  ApiInternalServerErrorResponse,
-  ApiNotFoundResponse,
-  ApiOkResponse,
   ApiOperation,
+  ApiOkResponse,
+  ApiNotFoundResponse,
   ApiUnauthorizedResponse,
+  ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
-import { NOTFOUND } from 'dns';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 export const ApiDeleteCategory = () => {
@@ -35,7 +34,7 @@ export const ApiDeleteCategory = () => {
     ApiNotFoundResponse({
       schema: {
         example: {
-          statusCode: NOTFOUND,
+          statusCode: HttpStatus.NOT_FOUND,
           message: ResponseMessages.NOT_FOUND_CATEGORY,
           error: 'Not found',
         },

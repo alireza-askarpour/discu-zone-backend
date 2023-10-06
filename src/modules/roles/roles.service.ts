@@ -1,13 +1,13 @@
 import {
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import { RolesRepository } from './roles.repository';
 import { RoleCreateDto } from './dtos/create-role.dto';
-import { ResponseFormat } from 'src/core/interfaces/response.interface';
 import { RoleUpdateDto } from './dtos/update-role.dto';
+import { ResponseFormat } from 'src/core/interfaces/response.interface';
 import { ResponseMessages } from 'src/core/constants/response-messages.constant';
 
 @Injectable()
