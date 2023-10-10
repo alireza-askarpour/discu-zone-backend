@@ -10,6 +10,7 @@ import { Roles } from 'src/modules/roles/roles.entity';
 import { Server } from 'src/modules/servers/servers.entity';
 import { Category } from 'src/modules/categories/categories.entity';
 import { Invite } from 'src/modules/invites/invite.entity';
+import { Member } from 'src/modules/members/member.entity';
 
 export const databaseProviders = [
   {
@@ -30,7 +31,15 @@ export const databaseProviders = [
           config = databaseConfig.development;
       }
       const sequelize = new Sequelize(config);
-      sequelize.addModels([User, Permissions, Roles, Server, Category, Invite]);
+      sequelize.addModels([
+        User,
+        Permissions,
+        Roles,
+        Server,
+        Category,
+        Invite,
+        Member,
+      ]);
       await sequelize.sync();
       return sequelize;
     },
