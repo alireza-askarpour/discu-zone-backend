@@ -17,7 +17,6 @@ export const ApiUpdateServer = () => {
               id: 'd00ec552-556e-4cbb-9b74-1bb102f968ab',
               channels: [],
               categories: [],
-              members: [],
               roles: [],
               name: 'Jamshidland',
               owner: '9e610e93-869c-4750-8be0-be2e33343bf1',

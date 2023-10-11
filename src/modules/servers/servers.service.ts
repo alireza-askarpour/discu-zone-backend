@@ -13,22 +13,36 @@ import { ServerCreateDto } from './dtos/create-server.dto';
 import { ServerUpdateDto } from './dtos/update-server.dto';
 import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
+import { MembersRepository } from '../members/members.repository';
 
 @Injectable()
 export class ServersService {
   constructor(
     private fileService: FileService,
     private serversRepository: ServersRepository,
+    private membersRepository: MembersRepository,
   ) {}
 
-  async createServer(data: ServerCreateDto): Promise<ResponseFormat<any>> {
-    const server = await this.serversRepository.create(data);
+  async createServer(
+    data: ServerCreateDto,
+    userId: string,
+  ): Promise<ResponseFormat<any>> {
+    const craetedServer = await this.serversRepository.create({
+      name: data.name,
+      ownerId: userId,
+    });
+
+    await this.membersRepository.create({
+      inviteId: null,
+      serverId: craetedServer.id,
+      userId: userId,
+    });
 
     return {
       statusCode: HttpStatus.CREATED,
       message: ResponseMessages.SERVER_CREATED_SUCCESS,
       data: {
-        server,
+        server: craetedServer,
       },
     };
   }

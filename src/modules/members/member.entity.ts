@@ -16,7 +16,7 @@ export class Member extends Model<Member> {
     type: DataType.UUID,
     allowNull: false,
   })
-  roomId: string;
+  serverId: string;
 
   @Column({
     type: DataType.UUID,
@@ -26,7 +26,7 @@ export class Member extends Model<Member> {
 
   @Column({
     type: DataType.UUID,
-    allowNull: false,
+    allowNull: true,
   })
   inviteId: string;
 

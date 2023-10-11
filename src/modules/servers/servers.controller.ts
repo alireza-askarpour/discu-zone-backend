@@ -9,6 +9,7 @@ import { CreateServerDecorator } from './decorators/create-server.decorator';
 import { UpdateServerDecorator } from './decorators/update-server.decorator';
 import { UploadAvatarDecorator } from './decorators/upload-avatar.decorator';
 import { DeleteAvatarDecorator } from './decorators/delete-avatar.decorator';
+import { GetUser } from 'src/common/decorators/get-user-param.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Servers')
@@ -17,9 +18,8 @@ export class ServersController {
   constructor(private readonly serversService: ServersService) {}
 
   @CreateServerDecorator()
-  createServer(@Body() data: ServerCreateDto, @Req() req: Request) {
-    data.owner = req.user.id;
-    return this.serversService.createServer(data);
+  createServer(@Body() data: ServerCreateDto, @GetUser('id') id: string) {
+    return this.serversService.createServer(data, id);
   }
 
   @UpdateServerDecorator()

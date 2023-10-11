@@ -20,7 +20,7 @@ export class Server extends Model<Server> {
     type: DataType.UUID,
     allowNull: false,
   })
-  owner: string;
+  ownerId: string;
 
   @Column({
     type: DataType.STRING,
@@ -38,12 +38,6 @@ export class Server extends Model<Server> {
     defaultValue: [],
   })
   categories: string[];
-
-  @Column({
-    type: DataType.ARRAY(DataType.UUID),
-    defaultValue: [],
-  })
-  members: string[];
 
   @Column({
     type: DataType.ARRAY(DataType.UUID),

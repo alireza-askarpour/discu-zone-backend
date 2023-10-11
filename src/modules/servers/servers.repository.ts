@@ -1,7 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Server } from './servers.entity';
 import { SERVER_REPOSITORY } from 'src/common/constants';
-import { ServerCreateDto } from './dtos/create-server.dto';
+import { ServerCreateInput } from 'src/common/interfaces/server.interface';
 
 @Injectable()
 export class ServersRepository {
@@ -9,7 +9,7 @@ export class ServersRepository {
     @Inject(SERVER_REPOSITORY) private readonly serverModel: typeof Server,
   ) {}
 
-  create(data: ServerCreateDto) {
+  create(data: ServerCreateInput) {
     return this.serverModel.create(data);
   }
 

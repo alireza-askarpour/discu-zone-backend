@@ -7,5 +7,6 @@ import { MembersRepository } from './members.repository';
 @Module({
   providers: [MembersService, MembersRepository, ...memberProviders],
   controllers: [MembersController],
+  exports: [MembersRepository],
 })
 export class MembersModule {}
