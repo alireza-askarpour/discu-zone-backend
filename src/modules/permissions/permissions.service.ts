@@ -1,17 +1,16 @@
 import {
-  BadRequestException,
   HttpStatus,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  BadRequestException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 
 import { PermissionsRepository } from './permissions.repository';
 import { PermissionCreateDto } from './dtos/create-permission.dto';
-import { ResponseMessages } from 'src/common/constants/response-messages.constant';
-import { ResponseFormat } from '../../common/interfaces/response.interface';
 import { PermissionUpdateDto } from './dtos/update-permission.dto';
-import { IdDto } from 'src/common/dtos/id.dto';
+import { ResponseFormat } from '../../common/interfaces/response.interface';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @Injectable()
 export class PermissionsService {

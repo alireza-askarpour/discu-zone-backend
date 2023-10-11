@@ -1,17 +1,8 @@
-import {
-  Body,
-  Param,
-  UsePipes,
-  Controller,
-  ValidationPipe,
-} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Body, Param, Controller, ParseUUIDPipe } from '@nestjs/common';
 
 import { PermissionsService } from './permissions.service';
-import { JoiValidationPipe } from 'src/common/pipes/joi-validation.pipe';
-import { createPermissionSchema } from './schemas/create-permission.schema';
 
-import { IdDto } from 'src/common/dtos/id.dto';
 import { PermissionCreateDto } from './dtos/create-permission.dto';
 import { PermissionUpdateDto } from './dtos/update-permission.dto';
 
@@ -31,21 +22,20 @@ export class PermissionsController {
   }
 
   @CreatePermissionDecorator()
-  @UsePipes(new JoiValidationPipe(createPermissionSchema))
   create(@Body() createDto: PermissionCreateDto) {
     return this.permissionsService.create(createDto);
   }
 
   @UpdatePermissionDecorator()
   update(
-    @Param(ValidationPipe) { id }: IdDto,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() data: PermissionUpdateDto,
   ) {
     return this.permissionsService.update(id, data);
   }
 
   @DeletePermissionDecorator()
-  delete(@Param(ValidationPipe) { id }: IdDto) {
+  delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.permissionsService.delete(id);
   }
 }

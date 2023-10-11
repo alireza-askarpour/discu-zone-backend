@@ -1,9 +1,8 @@
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Param, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Param, ParseUUIDPipe } from '@nestjs/common';
 
 import { CategoriesService } from './categories.service';
 
-import { IdDto } from 'src/common/dtos/id.dto';
 import { CategoryCreateDto } from './dtos/create-category.dto';
 import { CategoryUpdateDto } from './dtos/update-category.dto';
 
@@ -24,14 +23,14 @@ export class CategoriesController {
 
   @UpdateCategoryDecorator()
   update(
-    @Param(ValidationPipe) { id }: IdDto,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() data: CategoryUpdateDto,
   ) {
     return this.categoriesService.update(id, data);
   }
 
   @DeleteCategoryDecorator()
-  delete(@Param(ValidationPipe) { id }: IdDto) {
+  delete(@Param('id', ParseUUIDPipe) id: string) {
     return this.categoriesService.delete(id);
   }
 }
