@@ -12,17 +12,21 @@ import {
 export class InvitesRepository {
   constructor(
     @Inject(INVITE_REPOSITORY)
-    private readonly invitesRepository: typeof Invite,
+    private readonly inviteModel: typeof Invite,
   ) {}
 
   create(data: InviteCreateDto) {
-    return this.invitesRepository.create({
+    return this.inviteModel.create({
       ...data,
       slug: nanoid(alphabetNumber + alphabetLetters, 12),
     });
   }
 
   updateUsesById(id: string) {
-    return this.invitesRepository.increment('uses', { by: 1, where: { id } });
+    return this.inviteModel.increment('uses', { by: 1, where: { id } });
+  }
+
+  findOneBySlug(slug: string) {
+    return this.inviteModel.findOne({ where: { slug } });
   }
 }
