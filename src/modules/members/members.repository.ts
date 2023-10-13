@@ -1,5 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Member } from './member.entity';
+import { User } from '../users/user.entity';
 import { MEMBER_REPOSITORY } from 'src/common/constants';
 import { MemberCreateInput } from 'src/common/interfaces/member.interface';
 
@@ -12,6 +13,25 @@ export class MembersRepository {
   }
 
   findServerMembers(serverId: string): Promise<Member[]> {
-    return this.memberModel.findAll({ where: { serverId } });
+    return this.memberModel.findAll({
+      where: { serverId },
+      attributes: { exclude: ['serverId', 'userId', 'inviteId'] },
+      include: [
+        {
+          model: User,
+          attributes: {
+            exclude: [
+              'id',
+              'password',
+              'createAt',
+              'updatedAt',
+              'servers',
+              'friends',
+              'email',
+            ],
+          },
+        },
+      ],
+    });
   }
 }

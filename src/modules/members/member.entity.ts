@@ -1,4 +1,12 @@
-import { Column, DataType, Model, Table } from 'sequelize-typescript';
+import {
+  BelongsTo,
+  Column,
+  DataType,
+  ForeignKey,
+  Model,
+  Table,
+} from 'sequelize-typescript';
+import { User } from '../users/user.entity';
 
 @Table({
   timestamps: true,
@@ -18,11 +26,15 @@ export class Member extends Model<Member> {
   })
   serverId: string;
 
+  @ForeignKey(() => User)
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
   userId: string;
+
+  @BelongsTo(() => User)
+  user: User;
 
   @Column({
     type: DataType.UUID,

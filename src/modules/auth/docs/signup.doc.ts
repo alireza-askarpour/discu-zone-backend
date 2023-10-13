@@ -11,7 +11,7 @@ import { ResponseMessages } from 'src/common/constants/response-messages.constan
 export const ApiSignup = () => {
   return applyDecorators(
     ApiOperation({
-      summary: 'signup with fullname, email and password',
+      summary: 'signup with displayName, email and password',
       description: 'get Jwt Token',
     }),
     ApiOkResponse({

@@ -3,14 +3,14 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 export class SignUpDto {
   @ApiProperty({
-    description: 'The fullname of user',
+    description: 'The displayName of user',
     required: true,
     type: String,
     example: 'John Doe',
   })
   @IsNotEmpty()
   @IsString()
-  readonly fullName: string;
+  readonly displayName: string;
 
   @ApiProperty({
     description: 'The email of user',

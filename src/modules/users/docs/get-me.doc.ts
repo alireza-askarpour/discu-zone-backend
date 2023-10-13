@@ -18,7 +18,7 @@ export const ApiGetMe = () => {
           statusCode: HttpStatus.OK,
           user: {
             id: '9e610e93-869c-4750-8be0-be2e33343bf1',
-            fullName: 'John Doe',
+            displayName: 'John Doe',
             username: null,
             email: 'johndoe@gmail.com',
             avatar: null,
