@@ -1,9 +1,6 @@
 import { Get, applyDecorators } from '@nestjs/common';
-import { ApiQuery } from '@nestjs/swagger';
+import { ApiJoinMemberToServer } from '../docs/join-member-to-server.doc';
 
 export const JoinMemberToServer = () => {
-  return applyDecorators(
-    Get('slug'),
-    ApiQuery({ name: 'slug', required: false }),
-  );
+  return applyDecorators(Get('slug'), ApiJoinMemberToServer());
 };

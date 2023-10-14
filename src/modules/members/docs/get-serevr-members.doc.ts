@@ -35,7 +35,7 @@ export const ApiGetServerMembers = () => {
     ApiUnauthorizedResponse({
       schema: {
         example: {
-          statusCode: 404,
+          statusCode: 401,
           message: ResponseMessages.UNAUTHORIZED,
           error: 'Unauthorized',
         },
