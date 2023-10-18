@@ -29,13 +29,16 @@ export class Invite extends Model<Invite> {
   serverId: string;
 
   @Column({
-    type: DataType.DATE,
+    type: DataType.INTEGER,
+    allowNull: true,
+    defaultValue: null,
   })
-  expiresAt: Date;
+  expiresAt: number;
 
   @Column({
     type: DataType.INTEGER,
-    defaultValue: 0, // no limit
+    defaultValue: null, // no limit
+    allowNull: true,
   })
   maxUse: number;
 

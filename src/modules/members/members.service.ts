@@ -39,31 +39,49 @@ export class MembersService {
       throw new BadRequestException(ResponseMessages.INVITE_SLUG_IS_REQUIRED);
     }
 
-    // check exist invite
+    // check is valid invite
     const invite = await this.invitesRepository.findOneBySlug(inviteSlug);
     if (!invite) {
       throw new NotFoundException(ResponseMessages.INVALID_INVITE_SLUG);
     }
 
-    // check exist server
-    const server = await this.serversRepository.findById(invite.serverId);
+    // check exist server and check already exist umember
+    const [server, existMember] = await Promise.all([
+      this.serversRepository.findById(invite.serverId),
+      this.membersRepository.findMemberByUserId(userId),
+    ]);
     if (!server) {
       throw new NotFoundException(ResponseMessages.NOT_FOUND_SERVER);
     }
+    if (existMember) {
+      throw new BadRequestException(ResponseMessages.MEMBER_ALREADY_EXISTS);
+    }
 
-    // join member to server
-    const member = await this.membersRepository.create({
-      userId,
-      serverId: server.id,
-      inviteId: invite.id,
-    });
+    // check exipred invite time
+    const now = Date.now();
+    if (invite.expiresAt && invite.expiresAt < now) {
+      throw new BadRequestException(ResponseMessages.EXPIRED_INVITE_TIME);
+    }
 
-    // caes uses invite
+    // check used invite maximum
+    if (invite.maxUse && invite.maxUse <= invite.uses) {
+      throw new BadRequestException(ResponseMessages.USED_INVITE_MAXIMUM);
+    }
+
+    // join member to server and increment invite uses
+    const [createdMember] = await Promise.all([
+      this.membersRepository.create({
+        userId,
+        serverId: server.id,
+        inviteId: invite.id,
+      }),
+      this.invitesRepository.updateUsesById(invite.id),
+    ]);
 
     return {
       statusCode: HttpStatus.CREATED,
       data: {
-        member,
+        member: createdMember,
       },
     };
   }

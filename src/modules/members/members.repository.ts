@@ -12,6 +12,11 @@ export class MembersRepository {
     return this.memberModel.create(data);
   }
 
+  findMemberByUserId(userId: string) {
+    return this.memberModel.findOne({ where: { userId } });
+  }
+
+  // find list of members in server
   findServerMembers(serverId: string): Promise<Member[]> {
     return this.memberModel.findAll({
       where: { serverId },

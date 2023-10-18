@@ -1,9 +1,9 @@
 import {
   ApiOperation,
   ApiOkResponse,
+  ApiNotFoundResponse,
   ApiBadRequestResponse,
   ApiUnauthorizedResponse,
-  ApiNotFoundResponse,
 } from '@nestjs/swagger';
 import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
@@ -36,7 +36,12 @@ export const ApiJoinMemberToServer = () => {
       schema: {
         example: {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: ResponseMessages.INVITE_SLUG_IS_REQUIRED,
+          message: [
+            ResponseMessages.INVITE_SLUG_IS_REQUIRED,
+            ResponseMessages.MEMBER_ALREADY_EXISTS,
+            ResponseMessages.EXPIRED_INVITE_TIME,
+            ResponseMessages.USED_INVITE_MAXIMUM,
+          ],
           error: 'Bad Request',
         },
       },

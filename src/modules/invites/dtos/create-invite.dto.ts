@@ -5,10 +5,10 @@ export class InviteCreateDto {
   serverId: string;
 
   @ApiProperty({
-    type: String,
-    example: '',
+    type: Number,
+    example: 0,
   })
-  expiresAt: Date;
+  expiresAt: number;
 
   @ApiProperty({
     type: Number,

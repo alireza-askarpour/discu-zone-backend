@@ -1,12 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Invite } from './invite.entity';
-import { INVITE_REPOSITORY } from 'src/common/constants';
-import { InviteCreateDto } from './dtos/create-invite.dto';
 import {
   nanoid,
   alphabetNumber,
   alphabetLetters,
 } from 'src/common/utils/nanoid.util';
+import { INVITE_REPOSITORY } from 'src/common/constants';
+import { CreateInviteInput } from 'src/common/interfaces/invite.interface';
 
 @Injectable()
 export class InvitesRepository {
@@ -15,7 +15,7 @@ export class InvitesRepository {
     private readonly inviteModel: typeof Invite,
   ) {}
 
-  create(data: InviteCreateDto) {
+  create(data: CreateInviteInput) {
     return this.inviteModel.create({
       ...data,
       slug: nanoid(alphabetNumber + alphabetLetters, 12),
