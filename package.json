@@ -26,7 +26,9 @@
     "@nestjs/jwt": "^10.1.1",
     "@nestjs/passport": "^10.0.2",
     "@nestjs/platform-express": "^10.2.7",
+    "@nestjs/platform-socket.io": "^10.2.7",
     "@nestjs/swagger": "^7.1.13",
+    "@nestjs/websockets": "^10.2.7",
     "bcryptjs": "^2.4.3",
     "chalk": "^4.1.2",
     "class-transformer": "^0.5.1",
@@ -44,6 +46,7 @@
     "rxjs": "^7.2.0",
     "sequelize": "^6.32.1",
     "sequelize-typescript": "^2.1.5",
+    "socket.io": "^4.7.2",
     "swagger-themes": "^1.2.29"
   },
   "devDependencies": {

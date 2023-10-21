@@ -11,6 +11,7 @@ import { CategoriesModule } from './modules/categories/categories.module';
 import { FileModule } from './modules/file/file.module';
 import { InvitesModule } from './modules/invites/invites.module';
 import { MembersModule } from './modules/members/members.module';
+import { SocketModule } from './modules/socket/socket.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { MembersModule } from './modules/members/members.module';
     FileModule,
     InvitesModule,
     MembersModule,
+    SocketModule,
   ],
   controllers: [],
   providers: [],

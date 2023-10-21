@@ -69,14 +69,18 @@ export class MembersService {
     }
 
     // join member to server and increment invite uses
-    const [createdMember] = await Promise.all([
+    const promises: Promise<any>[] = [
       this.membersRepository.create({
         userId,
         serverId: server.id,
         inviteId: invite.id,
       }),
-      this.invitesRepository.updateUsesById(invite.id),
-    ]);
+    ];
+    if (invite.uses) {
+      const updateUses = this.invitesRepository.updateUsesById(invite.id);
+      promises.push(updateUses);
+    }
+    const [createdMember] = await Promise.all(promises);
 
     return {
       statusCode: HttpStatus.CREATED,
