@@ -14,6 +14,8 @@ export interface Configs {
   DB_NAME_DEVELOPMENT: string;
   DB_NAME_PRODUCTION: string;
   JWTKEY: string;
+  ACCESS_TOKEN_SECRET_KEY: string;
+  REFRESH_TOKEN_SECRET_KEY: string;
   TOKEN_EXPIRATION: string;
   BEARER: string;
 }
@@ -30,6 +32,8 @@ export default (): Configs => ({
   DB_NAME_DEVELOPMENT: process.env.DB_NAME_DEVELOPMENT,
   DB_NAME_PRODUCTION: process.env.DB_NAME_PRODUCTION,
   JWTKEY: process.env.JWTKEY,
+  REFRESH_TOKEN_SECRET_KEY: process.env.REFRESH_TOKEN_SECRET_KEY,
+  ACCESS_TOKEN_SECRET_KEY: process.env.ACCESS_TOKEN_SECRET_KEY,
   TOKEN_EXPIRATION: process.env.TOKEN_EXPIRATION,
   BEARER: process.env.BEARER,
 });
@@ -50,7 +54,8 @@ export const appListener = () => {
   const runningOnPort = `on port ${bold(port)}`;
   const runningSince = `[since ${new Date().toISOString()}]`;
   console.log(`🏁 —> ${runningMode} ${runningOnPort} ${runningSince}`);
-  if (isDevelopment) console.log(
-    `🏁 —> RestApi: ${bold(`http://localhost:${port}${documentRoute}`)}`,
-  );
+  if (isDevelopment)
+    console.log(
+      `🏁 —> RestApi: ${bold(`http://localhost:${port}${documentRoute}`)}`,
+    );
 };

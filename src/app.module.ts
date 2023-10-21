@@ -12,6 +12,7 @@ import { FileModule } from './modules/file/file.module';
 import { InvitesModule } from './modules/invites/invites.module';
 import { MembersModule } from './modules/members/members.module';
 import { SocketModule } from './modules/socket/socket.module';
+import { JwtModule } from './modules/jwt/jwt.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SocketModule } from './modules/socket/socket.module';
     InvitesModule,
     MembersModule,
     SocketModule,
+    JwtModule,
   ],
   controllers: [],
   providers: [],
