@@ -1,11 +1,9 @@
-import { applyDecorators } from '@nestjs/common';
 import {
-  ApiInternalServerErrorResponse,
-  ApiOkResponse,
   ApiOperation,
-  ApiUnauthorizedResponse,
+  ApiOkResponse,
+  ApiBadRequestResponse,
 } from '@nestjs/swagger';
-
+import { applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 export const ApiLogin = () => {
@@ -25,21 +23,12 @@ export const ApiLogin = () => {
         },
       },
     }),
-    ApiUnauthorizedResponse({
+    ApiBadRequestResponse({
       schema: {
         example: {
-          statusCode: 401,
-          message: ResponseMessages.INVALID_USERNAME_OR_PASSWORD,
+          statusCode: 400,
+          message: ResponseMessages.INVALID_EMAIL_OR_PASSWORD,
           error: 'Bad Request',
-        },
-      },
-    }),
-    ApiInternalServerErrorResponse({
-      schema: {
-        example: {
-          statusCode: 500,
-          message: ResponseMessages.INTERNAL_SERVER_ERROR,
-          error: 'Internal Server Error ',
         },
       },
     }),

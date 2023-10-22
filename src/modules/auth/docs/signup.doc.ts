@@ -1,11 +1,11 @@
-import { HttpStatus, applyDecorators } from '@nestjs/common';
-
 import {
+  ApiOperation,
+  ApiOkResponse,
+  ApiConflictResponse,
   ApiBadRequestResponse,
   ApiInternalServerErrorResponse,
-  ApiOkResponse,
-  ApiOperation,
 } from '@nestjs/swagger';
+import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 export const ApiSignup = () => {
@@ -34,11 +34,20 @@ export const ApiSignup = () => {
         },
       },
     }),
+    ApiConflictResponse({
+      schema: {
+        example: {
+          statusCode: HttpStatus.CONFLICT,
+          message: ResponseMessages.EMAIL_ALREADY_EXIST,
+          error: 'Conflict',
+        },
+      },
+    }),
     ApiInternalServerErrorResponse({
       schema: {
         example: {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: ResponseMessages.INTERNAL_SERVER_ERROR,
+          message: ResponseMessages.FAILED_SIGNUP,
           error: 'Internal Server Error',
         },
       },
