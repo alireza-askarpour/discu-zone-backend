@@ -16,12 +16,12 @@ export class AuthController {
   constructor(private authService: AuthService) {}
 
   @LoginDecorator()
-  async login(@Req() req: Request, @Body() loginDto: LoginDto) {
-    return await this.authService.login();
+  async login(@Body() loginDto: LoginDto) {
+    return await this.authService.login(loginDto);
   }
 
   @SignupDecorator()
-  async signUp(@Body() user: SignUpDto) {
-    return await this.authService.signin(user);
+  async signUp(@Body() signupDto: SignUpDto) {
+    return await this.authService.signin(signupDto);
   }
 }

@@ -2,12 +2,17 @@ import {
   HttpStatus,
   Injectable,
   ConflictException,
+  BadRequestException,
   InternalServerErrorException,
 } from '@nestjs/common';
+import * as bcrypt from 'bcryptjs';
 
+import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
+
 import { JwtService } from '../jwt/jwt.service';
 import { UsersRepository } from '../users/users.repository';
+
 import { configService } from 'src/common/config/app.config';
 import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
@@ -19,19 +24,56 @@ export class AuthService {
     private usersRepository: UsersRepository,
   ) {}
 
-  async login() {}
+  async login(loginDto: LoginDto): Promise<ResponseFormat<any>> {
+    // check exist user by email
+    const user = await this.usersRepository.findOneByEmail(loginDto.email);
+    if (!user) {
+      throw new BadRequestException(ResponseMessages.INVALID_EMAIL_OR_PASSWORD);
+    }
 
-  async signin(user: SignUpDto): Promise<ResponseFormat<any>> {
+    const isMatch = bcrypt.compareSync(loginDto.password, user.password);
+    if (!isMatch) {
+      throw new BadRequestException(ResponseMessages.INVALID_EMAIL_OR_PASSWORD);
+    }
+
+    // generate access tokan an refresh token
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signToken(
+        user.id,
+        configService.get('ACCESS_TOKEN_SECRET_KEY'),
+        configService.get('ACCESS_TOKEN_EXPIRES'),
+      ),
+      this.jwtService.signToken(
+        user.id,
+        configService.get('REFRESH_TOKEN_SECRET_KEY'),
+        configService.get('REFRESH_TOKEN_EXPIRES'),
+      ),
+    ]);
+
+    return {
+      statusCode: HttpStatus.OK,
+      data: {
+        refreshToken,
+        accessToken,
+      },
+    };
+  }
+
+  async signin(signupDto: SignUpDto): Promise<ResponseFormat<any>> {
     // prevent duplicate email
     const duplicatedEmail = await this.usersRepository.findOneByEmail(
-      user.email,
+      signupDto.email,
     );
     if (duplicatedEmail) {
       throw new ConflictException(ResponseMessages.EMAIL_ALREADY_EXIST);
     }
 
+    const salt = bcrypt.genSaltSync(10);
+    const hashedPassword = bcrypt.hashSync(signupDto.password, salt);
+    signupDto.password = hashedPassword;
+
     // save user in database
-    const createdUser = await this.usersRepository.create(user);
+    const createdUser = await this.usersRepository.create(signupDto);
     if (!createdUser) {
       throw new InternalServerErrorException(ResponseMessages.FAILED_SIGNUP);
     }

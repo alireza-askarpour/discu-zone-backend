@@ -19,7 +19,8 @@ export const ApiSignup = () => {
         example: {
           statusCode: HttpStatus.CREATED,
           data: {
-            token: 'xxxx',
+            refreshToken: 'xxxx',
+            accessToken: 'xxxx',
           },
         },
       },

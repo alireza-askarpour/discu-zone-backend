@@ -17,9 +17,10 @@ export const ApiLogin = () => {
     ApiOkResponse({
       schema: {
         example: {
-          statusCode: 201,
+          statusCode: 200,
           data: {
-            token: 'xxxx',
+            refreshToken: 'xxxx',
+            accessToken: 'xxxx',
           },
         },
       },
