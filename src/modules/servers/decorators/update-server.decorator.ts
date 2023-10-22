@@ -4,7 +4,7 @@ import { ApiUpdateServer } from '../docs/update-server.doc';
 
 export const UpdateServerDecorator = () => {
   return applyDecorators(
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
     ApiUpdateServer(),
     Patch(':id'),
   );

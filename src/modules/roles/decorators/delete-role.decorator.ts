@@ -4,7 +4,7 @@ import { ApiDeleteRole } from '../docs/delete-role.doc';
 
 export const DeleteRoleDecorator = () => {
   return applyDecorators(
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
     Delete(':id'),
     ApiDeleteRole(),
   );

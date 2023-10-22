@@ -6,6 +6,6 @@ export const JoinMemberToServer = () => {
   return applyDecorators(
     Get(':slug'),
     ApiJoinMemberToServer(),
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
   );
 };

@@ -4,7 +4,7 @@ import { ApiGetServerMembers } from '../docs/get-serevr-members.doc';
 
 export const GetServerMembersDecorator = () => {
   return applyDecorators(
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
     ApiGetServerMembers(),
     Get('serverId'),
   );

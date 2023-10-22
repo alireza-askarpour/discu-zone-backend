@@ -4,7 +4,7 @@ import { ApiCreateServer } from '../docs/create-server.doc';
 
 export const CreateServerDecorator = () => {
   return applyDecorators(
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
     ApiCreateServer(),
     Post(),
   );

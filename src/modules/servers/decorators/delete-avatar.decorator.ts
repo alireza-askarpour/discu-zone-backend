@@ -4,7 +4,7 @@ import { Patch, UseGuards, applyDecorators } from '@nestjs/common';
 
 export const DeleteAvatarDecorator = () => {
   return applyDecorators(
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
     ApiDeleteAvatar(),
     Patch('delete-avatar/:id'),
   );

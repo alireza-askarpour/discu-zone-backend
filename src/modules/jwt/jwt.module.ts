@@ -6,5 +6,6 @@ import { UsersModule } from '../users/users.module';
 @Module({
   imports: [_JwtModule, UsersModule],
   providers: [JwtService],
+  exports: [JwtService],
 })
 export class JwtModule {}

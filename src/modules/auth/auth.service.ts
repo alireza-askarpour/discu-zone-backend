@@ -1,62 +1,61 @@
-import * as bcrypt from 'bcryptjs';
-import { JwtService } from '@nestjs/jwt';
-import { HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpStatus,
+  Injectable,
+  ConflictException,
+  InternalServerErrorException,
+} from '@nestjs/common';
 
 import { SignUpDto } from './dtos/signup.dto';
+import { JwtService } from '../jwt/jwt.service';
 import { UsersRepository } from '../users/users.repository';
+import { configService } from 'src/common/config/app.config';
+import { ResponseFormat } from 'src/common/interfaces/response.interface';
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private readonly usersRepository: UsersRepository,
-    private readonly jwtService: JwtService,
+    private jwtService: JwtService,
+    private usersRepository: UsersRepository,
   ) {}
 
-  async validateUser(email: string, pass: string) {
-    // find if user exist with this email
-    const user = await this.usersRepository.findOneByEmail(email);
-    if (!user) return null;
+  async login() {}
 
-    // find if user password match
-    const match = await this.comparePassword(pass, user.password);
-    if (!match) return null;
+  async signin(user: SignUpDto): Promise<ResponseFormat<any>> {
+    // prevent duplicate email
+    const duplicatedEmail = await this.usersRepository.findOneByEmail(
+      user.email,
+    );
+    if (duplicatedEmail) {
+      throw new ConflictException(ResponseMessages.EMAIL_ALREADY_EXIST);
+    }
 
-    const { password, ...result } = user['dataValues'];
-    return result;
-  }
+    // save user in database
+    const createdUser = await this.usersRepository.create(user);
+    if (!createdUser) {
+      throw new InternalServerErrorException(ResponseMessages.FAILED_SIGNUP);
+    }
 
-  public async login({ id, email }: { id: string; email: string }) {
-    const token = await this.generateToken({ id, email });
-    return { statusCode: HttpStatus.CREATED, data: { token } };
-  }
+    // generate access tokan an refresh token
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signToken(
+        createdUser.id,
+        configService.get('ACCESS_TOKEN_SECRET_KEY'),
+        configService.get('ACCESS_TOKEN_EXPIRES'),
+      ),
+      this.jwtService.signToken(
+        createdUser.id,
+        configService.get('REFRESH_TOKEN_SECRET_KEY'),
+        configService.get('REFRESH_TOKEN_EXPIRES'),
+      ),
+    ]);
 
-  public async create(user: SignUpDto) {
-    const pass = await this.hashPassword(user.password);
-    const newUser = await this.usersRepository.create({
-      ...user,
-      password: pass,
-    });
-    const { password, ...result } = newUser['dataValues'];
-    const token = await this.generateToken({
-      email: result.email,
-      id: result.id,
-    });
-
-    return { statusCode: HttpStatus.CREATED, data: { token } };
-  }
-
-  private async generateToken(payload: { id: string; email: string }) {
-    const token = await this.jwtService.signAsync(payload);
-    return token;
-  }
-
-  private async hashPassword(password: string) {
-    const hash = await bcrypt.hash(password, 10);
-    return hash;
-  }
-
-  private async comparePassword(enteredPassword: string, dbPassword: string) {
-    const match = await bcrypt.compare(enteredPassword, dbPassword);
-    return match;
+    return {
+      statusCode: HttpStatus.CREATED,
+      data: {
+        refreshToken,
+        accessToken,
+      },
+    };
   }
 }

@@ -15,7 +15,7 @@ import { ApiUploadAvatar } from '../docs/upload-avatar.doc';
 
 export const UploadAvatarDecorator = () => {
   return applyDecorators(
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
     ApiConsumes('multipart/form-data'),
     UseInterceptors(
       FileInterceptor('avatar', {

@@ -17,6 +17,8 @@ export interface Configs {
   ACCESS_TOKEN_SECRET_KEY: string;
   REFRESH_TOKEN_SECRET_KEY: string;
   TOKEN_EXPIRATION: string;
+  ACCESS_TOKEN_EXPIRES: string;
+  REFRESH_TOKEN_EXPIRES: string;
   BEARER: string;
 }
 
@@ -35,6 +37,8 @@ export default (): Configs => ({
   REFRESH_TOKEN_SECRET_KEY: process.env.REFRESH_TOKEN_SECRET_KEY,
   ACCESS_TOKEN_SECRET_KEY: process.env.ACCESS_TOKEN_SECRET_KEY,
   TOKEN_EXPIRATION: process.env.TOKEN_EXPIRATION,
+  ACCESS_TOKEN_EXPIRES: process.env.ACCESS_TOKEN_EXPIRES,
+  REFRESH_TOKEN_EXPIRES: process.env.REFRESH_TOKEN_EXPIRES,
   BEARER: process.env.BEARER,
 });
 

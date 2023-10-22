@@ -6,6 +6,6 @@ export const CreateInviteDecorator = () => {
   return applyDecorators(
     Post(':serverId'),
     ApiCreateInvite(),
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
   );
 };

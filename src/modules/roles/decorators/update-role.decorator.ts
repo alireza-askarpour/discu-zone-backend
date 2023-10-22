@@ -4,7 +4,7 @@ import { ApiUpdateRole } from '../docs/update-role.doc';
 
 export const UpdateRoleDecorator = () => {
   return applyDecorators(
-    UseGuards(AuthGuard('jwt')),
+    // UseGuards(AuthGuard('jwt')),
     Patch(':id'),
     ApiUpdateRole(),
   );
