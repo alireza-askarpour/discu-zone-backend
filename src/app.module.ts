@@ -13,12 +13,16 @@ import { InvitesModule } from './modules/invites/invites.module';
 import { MembersModule } from './modules/members/members.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { JwtModule } from './modules/jwt/jwt.module';
+import { config } from './common/config/index.config';
+import { validationSchema } from './common/config/schema/config.schema';
+import { Oauth2Module } from './modules/oauth2/oauth2.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      envFilePath: '.env',
+      load: [config],
+      validationSchema,
     }),
     DatabaseModule,
     UsersModule,
@@ -32,6 +36,7 @@ import { JwtModule } from './modules/jwt/jwt.module';
     MembersModule,
     SocketModule,
     JwtModule,
+    Oauth2Module,
   ],
   controllers: [],
   providers: [],

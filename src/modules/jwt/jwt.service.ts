@@ -7,7 +7,6 @@ import {
 
 import { UsersRepository } from '../users/users.repository';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
-import { configService } from 'src/common/config/app.config';
 
 @Injectable()
 export class JwtService {
@@ -34,25 +33,25 @@ export class JwtService {
   }
 
   // verify refresh token
-  async vefiryRefreshToken(token: string) {
-    return new Promise(async (resolve, reject) => {
-      const payload: any = this.jwtService.verifyAsync(token, {
-        secret: configService.get('REFRESH_TOKEN_SECRET_KEY'),
-      });
+  // async vefiryRefreshToken(token: string) {
+  //   return new Promise(async (resolve, reject) => {
+  //     const payload: any = this.jwtService.verifyAsync(token, {
+  //       secret: configService.get('REFRESH_TOKEN_SECRET_KEY'),
+  //     });
 
-      const user = await this.usersRepository.findOneById(payload.userId);
-      if (!user) {
-        return reject(new UnauthorizedException(ResponseMessages.UNAUTHORIZED));
-      }
+  //     const user = await this.usersRepository.findOneById(payload.userId);
+  //     if (!user) {
+  //       return reject(new UnauthorizedException(ResponseMessages.UNAUTHORIZED));
+  //     }
 
-      resolve(payload?.userId);
-    });
-  }
+  //     resolve(payload?.userId);
+  //   });
+  // }
 
-  verifyAccessToken(token: string) {
-    return this.jwtService.verify(
-      token,
-      configService.get('ACCESS_TOKEN_SECRET_KEY'),
-    );
-  }
+  // verifyAccessToken(token: string) {
+  //   return this.jwtService.verify(
+  //     token,
+  //     configService.get('ACCESS_TOKEN_SECRET_KEY'),
+  //   );
+  // }
 }
