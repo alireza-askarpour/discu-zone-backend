@@ -1,4 +1,5 @@
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
+import { ICredentials } from './interfaces/credentials.interface';
 
 @Table
 export class User extends Model<User> {
@@ -40,6 +41,18 @@ export class User extends Model<User> {
     },
   })
   password: string;
+
+  @Column({
+    type: DataType.BOOLEAN,
+    allowNull: false,
+  })
+  confirmed: boolean;
+
+  @Column({
+    type: DataType.JSONB,
+    allowNull: false,
+  })
+  credentials: ICredentials;
 
   @Column({
     type: DataType.STRING,
