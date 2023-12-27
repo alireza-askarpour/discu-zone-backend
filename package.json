@@ -20,6 +20,7 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/axios": "^3.0.1",
     "@nestjs/common": "^10.2.7",
     "@nestjs/config": "^3.1.1",
     "@nestjs/core": "^10.2.7",
@@ -29,6 +30,7 @@
     "@nestjs/platform-socket.io": "^10.2.7",
     "@nestjs/swagger": "^7.1.13",
     "@nestjs/websockets": "^10.2.7",
+    "axios": "^1.6.3",
     "bcryptjs": "^2.4.3",
     "chalk": "^4.1.2",
     "class-transformer": "^0.5.1",
@@ -47,6 +49,7 @@
     "rxjs": "^7.2.0",
     "sequelize": "^6.32.1",
     "sequelize-typescript": "^2.1.5",
+    "simple-oauth2": "^5.0.0",
     "socket.io": "^4.7.2",
     "swagger-themes": "^1.2.29",
     "uuid": "^9.0.1"
@@ -64,6 +67,7 @@
     "@types/passport-jwt": "^3.0.9",
     "@types/passport-local": "^1.0.35",
     "@types/sequelize": "^4.28.15",
+    "@types/simple-oauth2": "^5.0.7",
     "@types/supertest": "^2.0.11",
     "@types/uuid": "^9.0.7",
     "@typescript-eslint/eslint-plugin": "^5.0.0",
