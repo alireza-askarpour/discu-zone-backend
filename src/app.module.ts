@@ -16,6 +16,7 @@ import { JwtModule } from './modules/jwt/jwt.module';
 import { config } from './common/config/index.config';
 import { validationSchema } from './common/config/schema/config.schema';
 import { Oauth2Module } from './modules/oauth2/oauth2.module';
+import { MailModule } from './modules/mail/mail.module';
 
 @Module({
   imports: [
@@ -37,6 +38,7 @@ import { Oauth2Module } from './modules/oauth2/oauth2.module';
     SocketModule,
     JwtModule,
     Oauth2Module,
+    MailModule,
   ],
   controllers: [],
   providers: [],
