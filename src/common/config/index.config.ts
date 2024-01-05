@@ -2,6 +2,7 @@ import { join } from 'path';
 import { readFileSync } from 'fs';
 import { isUndefined } from '../utils/validation.util';
 import { IConfig } from './interfaces/config.interface';
+import { redisUrlParser } from '../utils/redis-url-parser.util';
 
 export const config = (): IConfig => {
   const publicKey = readFileSync(
@@ -57,6 +58,7 @@ export const config = (): IConfig => {
         pass: process.env.EMAIL_PASS,
       },
     },
+    redis: redisUrlParser(process.env.REDIS_URL),
     oauth2: {
       google:
         isUndefined(process.env.GOOGLE_CLIENT_ID) ||

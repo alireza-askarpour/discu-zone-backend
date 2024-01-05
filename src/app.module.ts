@@ -1,5 +1,10 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
+
+import { config } from './common/config/index.config';
+import { CacheConfig } from './common/config/cache.config';
+import { validationSchema } from './common/config/schema/config.schema';
 
 import { DatabaseModule } from './common/database/database.module';
 import { UsersModule } from './modules/users/users.module';
@@ -13,8 +18,6 @@ import { InvitesModule } from './modules/invites/invites.module';
 import { MembersModule } from './modules/members/members.module';
 import { SocketModule } from './modules/socket/socket.module';
 import { JwtModule } from './modules/jwt/jwt.module';
-import { config } from './common/config/index.config';
-import { validationSchema } from './common/config/schema/config.schema';
 import { Oauth2Module } from './modules/oauth2/oauth2.module';
 import { MailModule } from './modules/mail/mail.module';
 
@@ -24,6 +27,11 @@ import { MailModule } from './modules/mail/mail.module';
       isGlobal: true,
       load: [config],
       validationSchema,
+    }),
+    CacheModule.registerAsync({
+      isGlobal: true,
+      imports: [ConfigModule],
+      useClass: CacheConfig,
     }),
     DatabaseModule,
     UsersModule,

@@ -1,3 +1,4 @@
+import { RedisOptions } from 'ioredis';
 import { IJwt } from './jwt.interface';
 import { IOAuth2 } from './oauth.interface';
 import { IEmailConfig } from './email-config.interface';
@@ -13,4 +14,5 @@ export interface IConfig {
   readonly jwt: IJwt;
   readonly emailService: IEmailConfig;
   readonly oauth2: IOAuth2;
+  readonly redis: RedisOptions;
 }
