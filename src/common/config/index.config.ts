@@ -56,7 +56,6 @@ export const config = (): IConfig => {
         user: process.env.EMAIL_USER,
         pass: process.env.EMAIL_PASS,
       },
-      senderEmail: process.env.SENDER_EMAIL,
     },
     oauth2: {
       google:

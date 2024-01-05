@@ -39,7 +39,6 @@ export const validationSchema = Joi.object({
   EMAIL_SECURE: Joi.bool().required(),
   EMAIL_USER: Joi.string().email().required(),
   EMAIL_PASS: Joi.string().required(),
-  SENDER_EMAIL: Joi.string().required(),
 
   // OAuth config
   GOOGLE_CLIENT_ID: Joi.string().optional(),

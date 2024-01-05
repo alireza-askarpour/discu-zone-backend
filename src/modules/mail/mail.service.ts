@@ -19,7 +19,7 @@ export class MailService {
 
     try {
       await this.mailerService.sendMail({
-        from: this.configService.get('emailService.senderEmail'),
+        from: this.configService.get('emailService.auth.user'),
         to: email,
         subject,
         context: {

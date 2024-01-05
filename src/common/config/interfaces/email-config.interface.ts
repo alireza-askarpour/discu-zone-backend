@@ -8,5 +8,4 @@ export interface IEmailConfig {
   port: number;
   secure: boolean;
   auth: IEmailAuth;
-  senderEmail: string;
 }
