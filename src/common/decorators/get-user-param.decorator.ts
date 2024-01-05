@@ -5,7 +5,7 @@ import { User } from 'src/modules/users/user.entity';
 export const GetUser = createParamDecorator(
   (keyname: keyof User, ctx: ExecutionContext) => {
     const req: Request = ctx.switchToHttp().getRequest();
-    const user = req.user;
-    return keyname ? user[keyname] : user;
+    // const user = req.user;
+    // return keyname ? user[keyname] : user;
   },
 );

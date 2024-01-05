@@ -4,6 +4,14 @@ import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 export class SignUpDto {
   @ApiProperty({
     type: String,
+    example: 'johndoe@gmail.com',
+  })
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
+
+  @ApiProperty({
+    type: String,
     example: 'John Doe',
   })
   @IsNotEmpty()
@@ -12,11 +20,12 @@ export class SignUpDto {
 
   @ApiProperty({
     type: String,
-    example: 'johndoe@gmail.com',
+    example: 'johndoe',
   })
-  @IsEmail()
   @IsNotEmpty()
-  email: string;
+  @IsString()
+  @MinLength(6)
+  username: string;
 
   @ApiProperty({
     type: String,

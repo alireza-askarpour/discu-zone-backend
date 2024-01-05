@@ -62,7 +62,7 @@ export class Oauth2Service {
     email: string,
     displayName: string,
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const user = await this.usersRepository.findOneByEmail(email);
+    const user = await this.usersRepository.findByEmail(email);
     if (!user) {
       this.usersRepository.create({ email, displayName, provider });
     }

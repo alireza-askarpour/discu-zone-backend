@@ -1,4 +1,4 @@
-import { AuthGuard } from '@nestjs/passport';
+// import { AuthGuard } from '@nestjs/passport';
 import { Get, UseGuards, applyDecorators } from '@nestjs/common';
 import { ApiGetServerMembers } from '../docs/get-serevr-members.doc';
 

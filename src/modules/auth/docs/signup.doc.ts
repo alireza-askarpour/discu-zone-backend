@@ -29,7 +29,7 @@ export const ApiSignup = () => {
       schema: {
         example: {
           statusCode: HttpStatus.BAD_REQUEST,
-          message: ResponseMessages.USERNAME_ALREADY_EXISTED,
+          message: ResponseMessages.USERNAME_ALREADY_EXIST,
           error: 'Bad Request',
         },
       },

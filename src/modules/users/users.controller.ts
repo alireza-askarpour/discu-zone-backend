@@ -14,9 +14,9 @@ export class UsersController {
 
   @GetMeDecorator()
   async getMe(@Req() req: Request) {
-    if (!req.user) {
-      throw new UnauthorizedException(ResponseMessages.UNAUTHORIZED);
-    }
-    return this.userService.getMe(req.user.id);
+    // if (!req.user) {
+    //   throw new UnauthorizedException(ResponseMessages.UNAUTHORIZED);
+    // }
+    // return this.userService.getMe(req.user.id);
   }
 }

@@ -1,4 +1,4 @@
-import { AuthGuard } from '@nestjs/passport';
+// import { AuthGuard } from '@nestjs/passport';
 import { ApiDeleteAvatar } from '../docs/delete-avatar.doc';
 import { Patch, UseGuards, applyDecorators } from '@nestjs/common';
 

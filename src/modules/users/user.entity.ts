@@ -1,3 +1,4 @@
+import * as dayjs from 'dayjs';
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
 import { ICredentials } from './interfaces/credentials.interface';
 
@@ -19,7 +20,7 @@ export class User extends Model<User> {
 
   @Column({
     type: DataType.STRING,
-    allowNull: true,
+    allowNull: false,
   })
   username: string;
 
@@ -70,15 +71,30 @@ export class User extends Model<User> {
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),
-    allowNull: false,
     defaultValue: [],
   })
   friends: string[];
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),
-    allowNull: false,
     defaultValue: [],
   })
   servers: string[];
+
+  updateCredentialsPassword(password: string): void {
+    this.credentials.version++;
+    this.credentials.lastPassword = password;
+    this.credentials.updatedAt = dayjs().unix();
+  }
+
+  updateCredentialsVersion(): void {
+    this.credentials.version++;
+    this.credentials.updatedAt = dayjs().unix();
+  }
 }
+
+// User.beforeCreate(() => {});
+// User.beforeUpdate(() => {});
+// User.afterCreate(() => {});
+// User.afterUpdate(() => {});
+// User.prototype.customMethod = function () {};

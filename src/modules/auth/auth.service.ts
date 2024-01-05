@@ -4,101 +4,167 @@ import {
   ConflictException,
   BadRequestException,
   InternalServerErrorException,
+  UnauthorizedException,
 } from '@nestjs/common';
+import * as dayjs from 'dayjs';
 import * as bcrypt from 'bcryptjs';
+import { ConfigService } from '@nestjs/config';
 
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
 
 import { JwtService } from '../jwt/jwt.service';
+import { MailService } from '../mail/mail.service';
 import { UsersRepository } from '../users/users.repository';
 
+import { TokenTypeEnum } from '../jwt/enums/token-type.enum';
+import { OAuthProvidersEnum } from '../users/enums/oauth-providers.enum';
 import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
-import { ConfigService } from '@nestjs/config';
+import { ConfirmEmailDto } from './dtos/confirm-email.dto';
+import { IEmailToken } from '../jwt/interfaces/email-token.interface';
+import { UsersService } from '../users/users.service';
+import { ICredentials } from '../users/interfaces/credentials.interface';
+import { IAuthResult } from './interfaces/auth-result.interface';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
+    private mailService: MailService,
+    private usersService: UsersService,
     private configService: ConfigService,
     private usersRepository: UsersRepository,
   ) {}
 
-  async login(loginDto: LoginDto): Promise<ResponseFormat<any>> {
-    // check exist user by email
-    const user = await this.usersRepository.findOneByEmail(loginDto.email);
-    if (!user) {
-      throw new BadRequestException(ResponseMessages.INVALID_EMAIL_OR_PASSWORD);
-    }
+  async signup(
+    signupDto: SignUpDto,
+    domain?: string,
+  ): Promise<ResponseFormat<any>> {
+    // prevent duplicate email and username
+    const [duplicatedEmail, duplicatedUsername] = await Promise.all([
+      this.usersRepository.findByEmail(signupDto.email),
+      this.usersRepository.findOneByUsername(signupDto.username),
+    ]);
 
-    const isMatch = bcrypt.compareSync(loginDto.password, user.password);
-    if (!isMatch) {
-      throw new BadRequestException(ResponseMessages.INVALID_EMAIL_OR_PASSWORD);
-    }
-
-    // generate access tokan an refresh token
-    // const [accessToken, refreshToken] = await Promise.all([
-    //   this.jwtService.signToken(
-    //     user.id,
-    //     configService.get('ACCESS_TOKEN_SECRET_KEY'),
-    //     configService.get('ACCESS_TOKEN_EXPIRES'),
-    //   ),
-    //   this.jwtService.signToken(
-    //     user.id,
-    //     configService.get('REFRESH_TOKEN_SECRET_KEY'),
-    //     configService.get('REFRESH_TOKEN_EXPIRES'),
-    //   ),
-    // ]);
-
-    return {
-      statusCode: HttpStatus.OK,
-      data: {
-        // refreshToken,
-        // accessToken,
-      },
-    };
-  }
-
-  async signin(signupDto: SignUpDto): Promise<ResponseFormat<any>> {
-    // prevent duplicate email
-    const duplicatedEmail = await this.usersRepository.findOneByEmail(
-      signupDto.email,
-    );
     if (duplicatedEmail) {
       throw new ConflictException(ResponseMessages.EMAIL_ALREADY_EXIST);
+    }
+    if (duplicatedUsername) {
+      throw new ConflictException(ResponseMessages.USERNAME_ALREADY_EXIST);
     }
 
     const salt = bcrypt.genSaltSync(10);
     const hashedPassword = bcrypt.hashSync(signupDto.password, salt);
-    signupDto.password = hashedPassword;
 
     // save user in database
-    const createdUser = await this.usersRepository.create(signupDto);
+    const createdUser = await this.usersRepository.create({
+      ...signupDto,
+      password: hashedPassword,
+      provider: OAuthProvidersEnum.LOCAL,
+    });
     if (!createdUser) {
       throw new InternalServerErrorException(ResponseMessages.FAILED_SIGNUP);
     }
 
-    // generate access tokan an refresh token
-    // const [accessToken, refreshToken] = await Promise.all([
-    //   this.jwtService.signToken(
-    //     createdUser.id,
-    //     configService.get('ACCESS_TOKEN_SECRET_KEY'),
-    //     configService.get('ACCESS_TOKEN_EXPIRES'),
-    //   ),
-    //   this.jwtService.signToken(
-    //     createdUser.id,
-    //     configService.get('REFRESH_TOKEN_SECRET_KEY'),
-    //     configService.get('REFRESH_TOKEN_EXPIRES'),
-    //   ),
-    // ]);
+    const confirmationToken = await this.jwtService.generateToken(
+      createdUser,
+      TokenTypeEnum.CONFIRMATION,
+      domain,
+    );
+
+    await this.mailService.sendConfirmationEmail(
+      createdUser.email,
+      confirmationToken,
+    );
 
     return {
       statusCode: HttpStatus.CREATED,
-      data: {
-        // refreshToken,
-        // accessToken,
-      },
+      message: ResponseMessages.REGISTERED_SUCCESS,
     };
+  }
+
+  async login(loginDto: LoginDto, domain?: string): Promise<IAuthResult> {
+    // check exist user by email
+    const user = await this.usersRepository.findByEmail(loginDto.email);
+    if (!user) {
+      throw new BadRequestException(ResponseMessages.INVALID_EMAIL_OR_PASSWORD);
+    }
+
+    if (!(await bcrypt.compare(loginDto.password, user.password))) {
+      await this.checkLastPassword(user.credentials, loginDto.password);
+    }
+
+    if (!user.confirmed) {
+      const confirmationToken = await this.jwtService.generateToken(
+        user,
+        TokenTypeEnum.CONFIRMATION,
+        domain,
+      );
+      this.mailService.sendConfirmationEmail(user.email, confirmationToken);
+      throw new UnauthorizedException(
+        ResponseMessages['PLEASE_CONFIRM_YOUR_EMAIL.A_NEW_EMAIL_HAS_BEEN_SENT'],
+      );
+    }
+
+    // generate access tokan an refresh token
+    const [accessToken, refreshToken] =
+      await this.jwtService.generateAuthTokens(user, domain);
+
+    return { user, accessToken, refreshToken };
+  }
+
+  public async confirmEmail(dto: ConfirmEmailDto, domain?: string) {
+    const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
+      dto.confirmationToken,
+      TokenTypeEnum.CONFIRMATION,
+    );
+    const user = await this.usersService.confirmEmail(id, version);
+    const [accessToken, refreshToken] =
+      await this.jwtService.generateAuthTokens(user, domain);
+    return { user, accessToken, refreshToken };
+  }
+
+  private async checkLastPassword(
+    credentials: ICredentials,
+    password: string,
+  ): Promise<void> {
+    const { lastPassword, passwordUpdatedAt } = credentials;
+
+    if (
+      lastPassword.length === 0 ||
+      !(await bcrypt.compare(password, lastPassword))
+    ) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
+
+    const now = dayjs();
+    const time = dayjs.unix(passwordUpdatedAt);
+    const months = now.diff(time, 'month');
+    const message = 'You changed your password ';
+
+    if (months > 0) {
+      throw new UnauthorizedException(
+        message + months + (months > 1 ? ' months ago' : ' month ago'),
+      );
+    }
+
+    const days = now.diff(time, 'day');
+
+    if (days > 0) {
+      throw new UnauthorizedException(
+        message + days + (days > 1 ? ' days ago' : ' day ago'),
+      );
+    }
+
+    const hours = now.diff(time, 'hour');
+
+    if (hours > 0) {
+      throw new UnauthorizedException(
+        message + hours + (hours > 1 ? ' hours ago' : ' hour ago'),
+      );
+    }
+
+    throw new UnauthorizedException(message + 'recently');
   }
 }
