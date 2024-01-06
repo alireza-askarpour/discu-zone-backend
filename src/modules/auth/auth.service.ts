@@ -1,35 +1,44 @@
 import {
-  HttpStatus,
+  Inject,
   Injectable,
+  HttpStatus,
   ConflictException,
   BadRequestException,
-  InternalServerErrorException,
   UnauthorizedException,
+  InternalServerErrorException,
 } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import * as bcrypt from 'bcryptjs';
+import { Cache } from 'cache-manager';
 import { ConfigService } from '@nestjs/config';
-
-import { LoginDto } from './dtos/login.dto';
-import { SignUpDto } from './dtos/signup.dto';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 import { JwtService } from '../jwt/jwt.service';
 import { MailService } from '../mail/mail.service';
+import { UsersService } from '../users/users.service';
 import { UsersRepository } from '../users/users.repository';
+
+import { LoginDto } from './dtos/login.dto';
+import { SignUpDto } from './dtos/signup.dto';
+import { ConfirmEmailDto } from './dtos/confirm-email.dto';
 
 import { TokenTypeEnum } from '../jwt/enums/token-type.enum';
 import { OAuthProvidersEnum } from '../users/enums/oauth-providers.enum';
-import { ResponseFormat } from 'src/common/interfaces/response.interface';
-import { ResponseMessages } from 'src/common/constants/response-messages.constant';
-import { ConfirmEmailDto } from './dtos/confirm-email.dto';
-import { IEmailToken } from '../jwt/interfaces/email-token.interface';
-import { UsersService } from '../users/users.service';
-import { ICredentials } from '../users/interfaces/credentials.interface';
+
 import { IAuthResult } from './interfaces/auth-result.interface';
+import { IEmailToken } from '../jwt/interfaces/email-token.interface';
+import { isNull, isUndefined } from 'src/common/utils/validation.util';
+import { ICredentials } from '../users/interfaces/credentials.interface';
+import { ResponseFormat } from 'src/common/interfaces/response.interface';
+import { IRefreshToken } from '../jwt/interfaces/refresh-token.interface';
+
+import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(CACHE_MANAGER)
+    private cacheManager: Cache,
     private jwtService: JwtService,
     private mailService: MailService,
     private usersService: UsersService,
@@ -37,7 +46,7 @@ export class AuthService {
     private usersRepository: UsersRepository,
   ) {}
 
-  async signup(
+  public async signup(
     signupDto: SignUpDto,
     domain?: string,
   ): Promise<ResponseFormat<any>> {
@@ -84,7 +93,10 @@ export class AuthService {
     };
   }
 
-  async login(loginDto: LoginDto, domain?: string): Promise<IAuthResult> {
+  public async login(
+    loginDto: LoginDto,
+    domain?: string,
+  ): Promise<IAuthResult> {
     // check exist user by email
     const user = await this.usersRepository.findByEmail(loginDto.email);
     if (!user) {
@@ -101,7 +113,10 @@ export class AuthService {
         TokenTypeEnum.CONFIRMATION,
         domain,
       );
-      this.mailService.sendConfirmationEmail(user.email, confirmationToken);
+      await this.mailService.sendConfirmationEmail(
+        user.email,
+        confirmationToken,
+      );
       throw new UnauthorizedException(
         ResponseMessages['PLEASE_CONFIRM_YOUR_EMAIL.A_NEW_EMAIL_HAS_BEEN_SENT'],
       );
@@ -166,5 +181,33 @@ export class AuthService {
     }
 
     throw new UnauthorizedException(message + 'recently');
+  }
+
+  public async refreshTokenAccess(
+    refreshToken: string,
+    domain?: string,
+  ): Promise<IAuthResult> {
+    const { id, version, tokenId } =
+      await this.jwtService.verifyToken<IRefreshToken>(
+        refreshToken,
+        TokenTypeEnum.REFRESH,
+      );
+    await this.checkIfTokenIsBlacklisted(id, tokenId);
+    const user = await this.usersService.findOneByCredentials(id, version);
+    const [accessToken, newRefreshToken] =
+      await this.jwtService.generateAuthTokens(user, domain, tokenId);
+    return { user, accessToken, refreshToken: newRefreshToken };
+  }
+
+  private async checkIfTokenIsBlacklisted(
+    userId: string,
+    tokenId: string,
+  ): Promise<void> {
+    const time = await this.cacheManager.get<number>(
+      `blacklist:${userId}:${tokenId}`,
+    );
+    if (!isUndefined(time) && !isNull(time)) {
+      throw new UnauthorizedException('Invalid token');
+    }
   }
 }

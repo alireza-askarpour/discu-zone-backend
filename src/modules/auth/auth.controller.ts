@@ -1,36 +1,47 @@
-import { Response } from 'express';
+import {
+  Res,
+  Req,
+  Post,
+  Body,
+  HttpStatus,
+  Controller,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import { Body, Controller, HttpStatus, Post, Res } from '@nestjs/common';
+import * as cookieSignature from 'cookie-signature';
 
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
 
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
+import { ConfirmEmailDto } from './dtos/confirm-email.dto';
 
 import { LoginDecorator } from './decorators/login.decorator';
 import { SignupDecorator } from './decorators/singup.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Origin } from 'src/common/decorators/origin.decorator';
-import { ConfirmEmailDto } from './dtos/confirm-email.dto';
+
+import { isNull, isUndefined } from 'src/common/utils/validation.util';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
-  private readonly cookiePath = '/api/auth';
+  private readonly testing: boolean;
   private readonly cookieName: string;
   private readonly refreshTime: number;
-  private readonly testing: boolean;
+  private readonly cookiePath = '/api/auth';
 
   constructor(
     private readonly authService: AuthService,
     private readonly usersService: UsersService,
     private readonly configService: ConfigService,
   ) {
+    this.testing = this.configService.get<boolean>('testing');
     this.cookieName = this.configService.get<string>('REFRESH_COOKIE');
     this.refreshTime = this.configService.get<number>('jwt.refresh.time');
-    this.testing = this.configService.get<boolean>('testing');
   }
 
   @Public()
@@ -58,17 +69,54 @@ export class AuthController {
   @Post('login')
   @Post('/confirm-email')
   async login(
-    @Res() res: Response,
+    @Res({ passthrough: true }) res: Response,
     @Origin() origin: string | undefined,
     @Body() loginDto: LoginDto,
   ) {
     const result = await this.authService.login(loginDto);
+    console.log('result.refreshToken: ', result.refreshToken);
     this.saveRefreshCookie(res, result.refreshToken)
       .status(HttpStatus.OK)
       .send(result);
   }
 
-  private saveRefreshCookie(res: Response, refreshToken: string) {
+  @Public()
+  @Post('/refresh-access')
+  public async refreshAccess(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const token = this.refreshTokenFromReq(req);
+    console.log('test');
+    const result = await this.authService.refreshTokenAccess(
+      token,
+      req.headers.origin,
+    );
+    this.saveRefreshCookie(res, result.refreshToken)
+      .status(HttpStatus.OK)
+      .send(result);
+  }
+
+  private refreshTokenFromReq(req: Request): string {
+    const token: string | undefined = req.cookies[this.cookieName];
+
+    console.log({ tokens: req.cookies });
+    if (isUndefined(token) || isNull(token)) {
+      throw new UnauthorizedException();
+    }
+    const cookieSecret = this.configService.get<string>('COOKIE_SECRET');
+    const value = cookieSignature.unsign(token, cookieSecret);
+    console.log({ value });
+    // const { valid, value } = result;
+
+    if (!value) {
+      throw new UnauthorizedException();
+    }
+
+    return value;
+  }
+
+  private xsaveRefreshCookie(res: Response, refreshToken: string) {
     return res
       .cookie(this.cookieName, refreshToken, {
         secure: !this.testing,
@@ -78,5 +126,18 @@ export class AuthController {
         expires: new Date(Date.now() + this.refreshTime * 1000),
       })
       .header('Content-Type', 'application/json');
+  }
+
+  private saveRefreshCookie(res: Response, refreshToken: string): Response {
+    console.log(132, { refreshToken });
+    return res.cookie(this.cookieName, refreshToken, {
+      secure: false,
+      httpOnly: true,
+      signed: true,
+      path: this.cookiePath,
+      expires: new Date(Date.now() + this.refreshTime * 1000),
+    });
+
+    // .header('Content-Type', 'application/json');
   }
 }

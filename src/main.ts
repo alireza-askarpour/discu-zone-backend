@@ -3,6 +3,7 @@ import { NestFactory } from '@nestjs/core';
 import * as cookieParser from 'cookie-parser';
 import { ConfigService } from '@nestjs/config';
 import { ValidationPipe } from '@nestjs/common';
+import * as cookieSignature from 'cookie-signature';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
@@ -21,6 +22,14 @@ async function bootstrap() {
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api');
   app.use(cookieParser(cookieSecret));
+
+  const cookieValue = 'your-cookie-value';
+  const _cookieSecret = 'your-cookie-secret';
+
+  const signedCookie = cookieSignature.sign(cookieValue, _cookieSecret);
+
+  console.log('Original Cookie:', cookieValue);
+  console.log('Signed Cookie:', signedCookie);
 
   SwaggerConfig(app);
 
