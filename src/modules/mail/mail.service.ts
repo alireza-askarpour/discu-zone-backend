@@ -34,4 +34,25 @@ export class MailService {
       );
     }
   }
+
+  public async sendResetPasswordEmail(email: string, token: string) {
+    const subject = 'Reset your password';
+
+    try {
+      await this.mailerService.sendMail({
+        from: this.configService.get('emailService.auth.user'),
+        to: email,
+        subject,
+        context: {
+          link: `https://${this.domain}/auth/reset-password/${token}`,
+        },
+        template: 'confirmation.ejs',
+      });
+    } catch (err) {
+      console.log(err);
+      throw new InternalServerErrorException(
+        ResponseMessages.FAILED_SEND_RESET_PASSWORD_EMAIL,
+      );
+    }
+  }
 }

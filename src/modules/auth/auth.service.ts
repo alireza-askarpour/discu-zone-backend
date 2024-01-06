@@ -33,6 +33,7 @@ import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { IRefreshToken } from '../jwt/interfaces/refresh-token.interface';
 
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
+import { EmailDto } from './interfaces/email.dto';
 
 @Injectable()
 export class AuthService {
@@ -140,6 +141,42 @@ export class AuthService {
     return { user, accessToken, refreshToken };
   }
 
+  public async resetPasswordEmail(
+    dto: EmailDto,
+    domain?: string,
+  ): Promise<any> {
+    const user = await this.usersRepository.findByEmail(dto.email);
+
+    if (!isUndefined(user) && !isNull(user)) {
+      const resetToken = await this.jwtService.generateToken(
+        user,
+        TokenTypeEnum.RESET_PASSWORD,
+        domain,
+      );
+      await this.mailService.sendResetPasswordEmail(user.email, resetToken);
+    }
+
+    return {
+      message: ResponseMessages.RESET_PASSWORD_EMAIL_SENT,
+    };
+  }
+
+  public async refreshTokenAccess(
+    refreshToken: string,
+    domain?: string,
+  ): Promise<IAuthResult> {
+    const { id, version, tokenId } =
+      await this.jwtService.verifyToken<IRefreshToken>(
+        refreshToken,
+        TokenTypeEnum.REFRESH,
+      );
+    await this.checkIfTokenIsBlacklisted(id, tokenId);
+    const user = await this.usersService.findOneByCredentials(id, version);
+    const [accessToken, newRefreshToken] =
+      await this.jwtService.generateAuthTokens(user, domain, tokenId);
+    return { user, accessToken, refreshToken: newRefreshToken };
+  }
+
   private async checkLastPassword(
     credentials: ICredentials,
     password: string,
@@ -181,22 +218,6 @@ export class AuthService {
     }
 
     throw new UnauthorizedException(message + 'recently');
-  }
-
-  public async refreshTokenAccess(
-    refreshToken: string,
-    domain?: string,
-  ): Promise<IAuthResult> {
-    const { id, version, tokenId } =
-      await this.jwtService.verifyToken<IRefreshToken>(
-        refreshToken,
-        TokenTypeEnum.REFRESH,
-      );
-    await this.checkIfTokenIsBlacklisted(id, tokenId);
-    const user = await this.usersService.findOneByCredentials(id, version);
-    const [accessToken, newRefreshToken] =
-      await this.jwtService.generateAuthTokens(user, domain, tokenId);
-    return { user, accessToken, refreshToken: newRefreshToken };
   }
 
   private async checkIfTokenIsBlacklisted(

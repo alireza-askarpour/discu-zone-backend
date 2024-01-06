@@ -6,6 +6,7 @@ import {
   HttpStatus,
   Controller,
   UnauthorizedException,
+  HttpCode,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -25,6 +26,7 @@ import { Public } from 'src/common/decorators/public.decorator';
 import { Origin } from 'src/common/decorators/origin.decorator';
 
 import { isNull, isUndefined } from 'src/common/utils/validation.util';
+import { EmailDto } from './interfaces/email.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -95,6 +97,16 @@ export class AuthController {
     this.saveRefreshCookie(res, result.refreshToken)
       .status(HttpStatus.OK)
       .send(result);
+  }
+
+  @Public()
+  @Post('forgot-password')
+  @HttpCode(HttpStatus.OK)
+  public async forgotPassword(
+    @Origin() origin: string | undefined,
+    @Body() emailDto: EmailDto,
+  ): Promise<any> {
+    return this.authService.resetPasswordEmail(emailDto, origin);
   }
 
   private refreshTokenFromReq(req: Request): string {
