@@ -35,6 +35,7 @@ import { IRefreshToken } from '../jwt/interfaces/refresh-token.interface';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 import { EmailDto } from './interfaces/email.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -191,6 +192,23 @@ export class AuthService {
     return { user, accessToken, refreshToken: newRefreshToken };
   }
 
+  public async updatePassword(
+    userId: string,
+    dto: ChangePasswordDto,
+    domain?: string,
+  ): Promise<IAuthResult> {
+    const { newPassword, currentPassword, confirmNewPassword } = dto;
+    this.comparePasswords(newPassword, confirmNewPassword);
+    const user = await this.usersService.updatePassword(
+      userId,
+      newPassword,
+      currentPassword,
+    );
+    const [accessToken, refreshToken] =
+      await this.jwtService.generateAuthTokens(user, domain);
+    return { user, accessToken, refreshToken };
+  }
+
   private async checkLastPassword(
     credentials: ICredentials,
     password: string,
@@ -243,6 +261,15 @@ export class AuthService {
     );
     if (!isUndefined(time) && !isNull(time)) {
       throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  private comparePasswords(
+    newPassword: string,
+    confirmNewPassword: string,
+  ): void {
+    if (newPassword !== confirmNewPassword) {
+      throw new BadRequestException(ResponseMessages.PASSWORDS_DO_NOT_MATCH);
     }
   }
 }

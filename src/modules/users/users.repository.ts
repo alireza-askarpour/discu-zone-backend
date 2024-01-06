@@ -5,6 +5,7 @@ import { OAuthProvidersEnum } from './enums/oauth-providers.enum';
 import { SignUpDto } from './dto/signup.dto';
 import { ICreateOAuthUserInput } from './interfaces/create-oauth-user-input.interface';
 import * as dayjs from 'dayjs';
+import { isUndefined } from 'src/common/utils/validation.util';
 
 @Injectable()
 export class UsersRepository {
@@ -14,6 +15,7 @@ export class UsersRepository {
     const isConfirmed = user.provider !== OAuthProvidersEnum.LOCAL;
     return this.userModel.create<User>({
       ...user,
+      password: isUndefined(user.password) ? 'UNSET' : user.password,
       confirmed: isConfirmed,
       credentials: {
         lastPassword: '',

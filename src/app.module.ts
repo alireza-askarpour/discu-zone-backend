@@ -20,6 +20,8 @@ import { SocketModule } from './modules/socket/socket.module';
 import { JwtModule } from './modules/jwt/jwt.module';
 import { Oauth2Module } from './modules/oauth2/oauth2.module';
 import { MailModule } from './modules/mail/mail.module';
+import { APP_GUARD } from '@nestjs/core';
+import { AuthGuard } from './common/guards/auth.guard';
 
 @Module({
   imports: [
@@ -49,6 +51,11 @@ import { MailModule } from './modules/mail/mail.module';
     MailModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: AuthGuard,
+    },
+  ],
 })
 export class AppModule {}

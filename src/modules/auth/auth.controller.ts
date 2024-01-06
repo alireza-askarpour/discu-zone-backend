@@ -3,15 +3,16 @@ import {
   Req,
   Post,
   Body,
+  Patch,
   HttpCode,
   HttpStatus,
   Controller,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
 import * as cookieSignature from 'cookie-signature';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { UsersService } from '../users/users.service';
@@ -20,13 +21,16 @@ import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
 import { EmailDto } from './interfaces/email.dto';
 import { ConfirmEmailDto } from './dtos/confirm-email.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 
 import { Public } from 'src/common/decorators/public.decorator';
 import { Origin } from 'src/common/decorators/origin.decorator';
 
 import { isNull, isUndefined } from 'src/common/utils/validation.util';
-import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
+@ApiBearerAuth()
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
@@ -67,10 +71,10 @@ export class AuthController {
       .send(result);
   }
 
+  @Public()
   @Post('login')
-  @Post('/confirm-email')
   async login(
-    @Res({ passthrough: true }) res: Response,
+    @Res() res: Response,
     @Origin() origin: string | undefined,
     @Body() loginDto: LoginDto,
   ) {
@@ -111,6 +115,24 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   public async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
+  }
+
+  @Patch('/update-password')
+  public async updatePassword(
+    @Res() res: Response,
+    @CurrentUser() userId: string,
+    @Origin() origin: string | undefined,
+    @Body() changePasswordDto: ChangePasswordDto,
+  ) {
+    const result = await this.authService.updatePassword(
+      userId,
+      changePasswordDto,
+      origin,
+    );
+
+    this.saveRefreshCookie(res, result.refreshToken)
+      .status(HttpStatus.OK)
+      .send(result);
   }
 
   private refreshTokenFromReq(req: Request): string {

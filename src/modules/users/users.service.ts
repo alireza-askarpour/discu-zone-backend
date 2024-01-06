@@ -5,8 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from './user.entity';
-import { hash } from 'bcryptjs';
+import { compare, hash } from 'bcryptjs';
 import { UsersRepository } from './users.repository';
+import { isNull, isUndefined } from 'src/common/utils/validation.util';
+import { excludeObjectKeys } from 'src/common/utils/exclude-object-keys.util';
 import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
@@ -16,8 +18,8 @@ export class UsersService {
 
   public async getMe(id: string): Promise<ResponseFormat<any>> {
     const user = await this.usersRepository.findOneById(id);
-    delete user.password;
-    return { statusCode: HttpStatus.OK, data: { user } };
+    const result = excludeObjectKeys(user, 'password', 'credentials');
+    return { statusCode: HttpStatus.OK, data: { user: result } };
   }
 
   public async confirmEmail(userId: string, version: number): Promise<User> {
@@ -58,6 +60,30 @@ export class UsersService {
   ): Promise<User> {
     const user = await this.findOneByCredentials(userId, version);
     return await this.changePassword(user, password);
+  }
+
+  public async updatePassword(
+    userId: string,
+    newPassword: string,
+    currentPassword?: string,
+  ): Promise<User> {
+    const user = await this.usersRepository.findOneById(userId);
+
+    if (user.password !== 'UNSET') {
+      if (isUndefined(currentPassword) || isNull(currentPassword)) {
+        throw new BadRequestException('Password is required');
+      }
+      if (!(await compare(currentPassword, user.password))) {
+        throw new BadRequestException(ResponseMessages.WRONG_PASSWORD);
+      }
+      if (await compare(newPassword, user.password)) {
+        throw new BadRequestException(
+          ResponseMessages.NEW_PASSWORD_MUST_BE_DIFFERENT,
+        );
+      }
+    }
+
+    return await this.changePassword(user, newPassword);
   }
 
   private async changePassword(user: User, password: string): Promise<User> {

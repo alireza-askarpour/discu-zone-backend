@@ -23,13 +23,13 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
   app.use(cookieParser(cookieSecret));
 
-  const cookieValue = 'your-cookie-value';
-  const _cookieSecret = 'your-cookie-secret';
+  // const cookieValue = 'your-cookie-value';
+  // const _cookieSecret = 'your-cookie-secret';
 
-  const signedCookie = cookieSignature.sign(cookieValue, _cookieSecret);
+  // const signedCookie = cookieSignature.sign(cookieValue, _cookieSecret);
 
-  console.log('Original Cookie:', cookieValue);
-  console.log('Signed Cookie:', signedCookie);
+  // console.log('Original Cookie:', cookieValue);
+  // console.log('Signed Cookie:', signedCookie);
 
   SwaggerConfig(app);
 
