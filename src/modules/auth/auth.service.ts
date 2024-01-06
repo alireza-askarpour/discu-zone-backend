@@ -34,6 +34,7 @@ import { IRefreshToken } from '../jwt/interfaces/refresh-token.interface';
 
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 import { EmailDto } from './interfaces/email.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
 
 @Injectable()
 export class AuthService {
@@ -158,6 +159,19 @@ export class AuthService {
 
     return {
       message: ResponseMessages.RESET_PASSWORD_EMAIL_SENT,
+    };
+  }
+
+  public async resetPassword(dto: ResetPasswordDto) {
+    const { password, resetToken } = dto;
+    const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
+      resetToken,
+      TokenTypeEnum.RESET_PASSWORD,
+    );
+    await this.usersService.resetPassword(id, version, password);
+
+    return {
+      message: ResponseMessages.PASSWORD_RESET_SUCCESSFULLY,
     };
   }
 

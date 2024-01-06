@@ -3,10 +3,10 @@ import {
   Req,
   Post,
   Body,
+  HttpCode,
   HttpStatus,
   Controller,
   UnauthorizedException,
-  HttpCode,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Request, Response } from 'express';
@@ -18,15 +18,14 @@ import { UsersService } from '../users/users.service';
 
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
+import { EmailDto } from './interfaces/email.dto';
 import { ConfirmEmailDto } from './dtos/confirm-email.dto';
 
-import { LoginDecorator } from './decorators/login.decorator';
-import { SignupDecorator } from './decorators/singup.decorator';
 import { Public } from 'src/common/decorators/public.decorator';
 import { Origin } from 'src/common/decorators/origin.decorator';
 
 import { isNull, isUndefined } from 'src/common/utils/validation.util';
-import { EmailDto } from './interfaces/email.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -76,7 +75,6 @@ export class AuthController {
     @Body() loginDto: LoginDto,
   ) {
     const result = await this.authService.login(loginDto);
-    console.log('result.refreshToken: ', result.refreshToken);
     this.saveRefreshCookie(res, result.refreshToken)
       .status(HttpStatus.OK)
       .send(result);
@@ -89,7 +87,6 @@ export class AuthController {
     @Res() res: Response,
   ): Promise<void> {
     const token = this.refreshTokenFromReq(req);
-    console.log('test');
     const result = await this.authService.refreshTokenAccess(
       token,
       req.headers.origin,
@@ -109,6 +106,13 @@ export class AuthController {
     return this.authService.resetPasswordEmail(emailDto, origin);
   }
 
+  @Public()
+  @Post('/reset-password')
+  @HttpCode(HttpStatus.OK)
+  public async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
+    return this.authService.resetPassword(resetPasswordDto);
+  }
+
   private refreshTokenFromReq(req: Request): string {
     const token: string | undefined = req.cookies[this.cookieName];
 
@@ -126,18 +130,6 @@ export class AuthController {
     }
 
     return value;
-  }
-
-  private xsaveRefreshCookie(res: Response, refreshToken: string) {
-    return res
-      .cookie(this.cookieName, refreshToken, {
-        secure: !this.testing,
-        httpOnly: true,
-        signed: true,
-        path: this.cookiePath,
-        expires: new Date(Date.now() + this.refreshTime * 1000),
-      })
-      .header('Content-Type', 'application/json');
   }
 
   private saveRefreshCookie(res: Response, refreshToken: string): Response {

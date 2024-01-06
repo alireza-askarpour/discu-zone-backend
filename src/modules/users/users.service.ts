@@ -5,6 +5,7 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from './user.entity';
+import { hash } from 'bcryptjs';
 import { UsersRepository } from './users.repository';
 import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
@@ -13,7 +14,7 @@ import { ResponseMessages } from 'src/common/constants/response-messages.constan
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  async getMe(id: string): Promise<ResponseFormat<any>> {
+  public async getMe(id: string): Promise<ResponseFormat<any>> {
     const user = await this.usersRepository.findOneById(id);
     delete user.password;
     return { statusCode: HttpStatus.OK, data: { user } };
@@ -46,6 +47,26 @@ export class UsersService {
     if (user.credentials.version !== version) {
       throw new UnauthorizedException(ResponseMessages.INVALID_CREDENTIALS);
     }
+
+    return user;
+  }
+
+  public async resetPassword(
+    userId: string,
+    version: number,
+    password: string,
+  ): Promise<User> {
+    const user = await this.findOneByCredentials(userId, version);
+    return await this.changePassword(user, password);
+  }
+
+  private async changePassword(user: User, password: string): Promise<User> {
+    user.updateCredentialsPassword(user.password);
+    const newPassword = await hash(password, 10);
+
+    await this.usersRepository.updateById(user.id, {
+      password: newPassword,
+    });
 
     return user;
   }
