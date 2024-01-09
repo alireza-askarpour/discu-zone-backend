@@ -7,6 +7,7 @@ import {
 import { Request } from 'express';
 import { isJWT } from 'class-validator';
 import { Reflector } from '@nestjs/core';
+import { ConfigService } from '@nestjs/config';
 
 import { JwtService } from '../../modules/jwt/jwt.service';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
@@ -18,6 +19,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
+    private readonly configService: ConfigService,
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -40,7 +42,8 @@ export class AuthGuard implements CanActivate {
     req: Request,
     isPublic: boolean,
   ): Promise<boolean> {
-    const auth = req.headers?.authorization;
+    const accessCookieName = this.configService.get('ACCESS_COOKIE');
+    const auth = req.cookies?.[accessCookieName];
 
     if (isUndefined(auth) || isNull(auth) || auth.length === 0) {
       return isPublic;
