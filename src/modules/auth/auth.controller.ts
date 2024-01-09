@@ -135,6 +135,20 @@ export class AuthController {
       .send(result);
   }
 
+  @Post('/logout')
+  public async logout(
+    @Req() req: Request,
+    @Res() res: Response,
+  ): Promise<void> {
+    const token = this.refreshTokenFromReq(req);
+    const message = await this.authService.logout(token);
+    res
+      .clearCookie(this.cookieName, { path: this.cookiePath })
+      .header('Content-Type', 'application/json')
+      .status(HttpStatus.OK)
+      .send(message);
+  }
+
   private refreshTokenFromReq(req: Request): string {
     const token: string | undefined = req.cookies[this.cookieName];
 

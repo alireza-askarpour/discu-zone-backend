@@ -36,6 +36,7 @@ import { ResponseMessages } from 'src/common/constants/response-messages.constan
 import { EmailDto } from './interfaces/email.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { ChangePasswordDto } from './dtos/change-password.dto';
+import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class AuthService {
@@ -46,6 +47,7 @@ export class AuthService {
     private mailService: MailService,
     private usersService: UsersService,
     private configService: ConfigService,
+    private commonService: CommonService,
     private usersRepository: UsersRepository,
   ) {}
 
@@ -209,6 +211,18 @@ export class AuthService {
     return { user, accessToken, refreshToken };
   }
 
+  public async logout(refreshToken: string) {
+    const { id, tokenId, exp } =
+      await this.jwtService.verifyToken<IRefreshToken>(
+        refreshToken,
+        TokenTypeEnum.REFRESH,
+      );
+    await this.blacklistToken(id, tokenId, exp);
+    return {
+      message: ResponseMessages.LOGOUT_SUCCESSFUL,
+    };
+  }
+
   private async checkLastPassword(
     credentials: ICredentials,
     password: string,
@@ -261,6 +275,21 @@ export class AuthService {
     );
     if (!isUndefined(time) && !isNull(time)) {
       throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  private async blacklistToken(
+    userId: string,
+    tokenId: string,
+    exp: number,
+  ): Promise<void> {
+    const now = dayjs().unix();
+    const ttl = (exp - now) * 1000;
+
+    if (ttl > 0) {
+      await this.commonService.throwInternalError(
+        this.cacheManager.set(`blacklist:${userId}:${tokenId}`, now, ttl),
+      );
     }
   }
 
