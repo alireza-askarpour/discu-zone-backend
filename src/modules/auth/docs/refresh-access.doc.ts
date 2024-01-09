@@ -1,25 +1,34 @@
 import {
   ApiOperation,
   ApiOkResponse,
-  ApiConflictResponse,
   ApiBadRequestResponse,
+  ApiUnauthorizedResponse,
   ApiInternalServerErrorResponse,
 } from '@nestjs/swagger';
 import { HttpStatus, applyDecorators } from '@nestjs/common';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 
-export const ApiSignup = () => {
+export const ApiRefreshAccess = () => {
   return applyDecorators(
     ApiOperation({
-      summary: 'local signup',
+      summary: 'refresh access token',
       description:
-        'Signup user and save `accessToken` and `refreshToken` in cookie',
+        'Refresh token and save new `accessToken` and `refreshToken` in cookie',
     }),
     ApiOkResponse({
       schema: {
         example: {
           statusCode: HttpStatus.OK,
-          message: ResponseMessages.REGISTERED_SUCCESS,
+          message: ResponseMessages.REFRESHED_TOKEN_SUCCESS,
+        },
+      },
+    }),
+    ApiUnauthorizedResponse({
+      schema: {
+        example: {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: ResponseMessages.UNAUTHORIZED,
+          error: 'Unauthorized',
         },
       },
     }),
@@ -32,26 +41,11 @@ export const ApiSignup = () => {
         },
       },
     }),
-    ApiConflictResponse({
-      schema: {
-        example: {
-          statusCode: HttpStatus.CONFLICT,
-          message: [
-            ResponseMessages.EMAIL_ALREADY_EXIST,
-            ResponseMessages.USERNAME_ALREADY_EXIST,
-          ],
-          error: 'Conflict',
-        },
-      },
-    }),
     ApiInternalServerErrorResponse({
       schema: {
         example: {
           statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-          message: [
-            ResponseMessages.FAILED_SIGNUP,
-            ResponseMessages.FAILED_SEND_CONFIRMATION_EMAIL,
-          ],
+          message: ResponseMessages.INTERNAL_SERVER_ERROR,
           error: 'Internal Server Error',
         },
       },

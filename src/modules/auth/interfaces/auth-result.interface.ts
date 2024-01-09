@@ -1,7 +1,6 @@
-import { User } from '../../users/user.entity';
+import { ResponseFormat } from 'src/common/interfaces/response.interface';
 
 export interface IAuthResult {
-  user: User;
-  accessToken: string;
-  refreshToken: string;
+  token: { accessToken: string; refreshToken: string };
+  response: ResponseFormat<any>;
 }

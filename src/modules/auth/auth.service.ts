@@ -16,27 +16,27 @@ import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { JwtService } from '../jwt/jwt.service';
 import { MailService } from '../mail/mail.service';
 import { UsersService } from '../users/users.service';
+import { CommonService } from 'src/common/common.service';
 import { UsersRepository } from '../users/users.repository';
 
 import { LoginDto } from './dtos/login.dto';
 import { SignUpDto } from './dtos/signup.dto';
+import { EmailDto } from './interfaces/email.dto';
 import { ConfirmEmailDto } from './dtos/confirm-email.dto';
+import { ResetPasswordDto } from './dtos/reset-password.dto';
+import { ChangePasswordDto } from './dtos/change-password.dto';
 
 import { TokenTypeEnum } from '../jwt/enums/token-type.enum';
 import { OAuthProvidersEnum } from '../users/enums/oauth-providers.enum';
 
 import { IAuthResult } from './interfaces/auth-result.interface';
 import { IEmailToken } from '../jwt/interfaces/email-token.interface';
-import { isNull, isUndefined } from 'src/common/utils/validation.util';
 import { ICredentials } from '../users/interfaces/credentials.interface';
 import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { IRefreshToken } from '../jwt/interfaces/refresh-token.interface';
 
+import { isNull, isUndefined } from 'src/common/utils/validation.util';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
-import { EmailDto } from './interfaces/email.dto';
-import { ResetPasswordDto } from './dtos/reset-password.dto';
-import { ChangePasswordDto } from './dtos/change-password.dto';
-import { CommonService } from 'src/common/common.service';
 
 @Injectable()
 export class AuthService {
@@ -131,10 +131,19 @@ export class AuthService {
     const [accessToken, refreshToken] =
       await this.jwtService.generateAuthTokens(user, domain);
 
-    return { user, accessToken, refreshToken };
+    return {
+      token: { accessToken, refreshToken },
+      response: {
+        statusCode: HttpStatus.OK,
+        message: ResponseMessages.LOGINED_SUCCESS,
+      },
+    };
   }
 
-  public async confirmEmail(dto: ConfirmEmailDto, domain?: string) {
+  public async confirmEmail(
+    dto: ConfirmEmailDto,
+    domain?: string,
+  ): Promise<IAuthResult> {
     const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
       dto.confirmationToken,
       TokenTypeEnum.CONFIRMATION,
@@ -142,13 +151,20 @@ export class AuthService {
     const user = await this.usersService.confirmEmail(id, version);
     const [accessToken, refreshToken] =
       await this.jwtService.generateAuthTokens(user, domain);
-    return { user, accessToken, refreshToken };
+
+    return {
+      token: { accessToken, refreshToken },
+      response: {
+        statusCode: HttpStatus.OK,
+        message: ResponseMessages.EMAIL_CONFIRMED_SUCCESS,
+      },
+    };
   }
 
   public async resetPasswordEmail(
     dto: EmailDto,
     domain?: string,
-  ): Promise<any> {
+  ): Promise<ResponseFormat<any>> {
     const user = await this.usersRepository.findByEmail(dto.email);
 
     if (!isUndefined(user) && !isNull(user)) {
@@ -161,11 +177,14 @@ export class AuthService {
     }
 
     return {
+      statusCode: HttpStatus.OK,
       message: ResponseMessages.RESET_PASSWORD_EMAIL_SENT,
     };
   }
 
-  public async resetPassword(dto: ResetPasswordDto) {
+  public async resetPassword(
+    dto: ResetPasswordDto,
+  ): Promise<ResponseFormat<any>> {
     const { password, resetToken } = dto;
     const { id, version } = await this.jwtService.verifyToken<IEmailToken>(
       resetToken,
@@ -174,6 +193,7 @@ export class AuthService {
     await this.usersService.resetPassword(id, version, password);
 
     return {
+      statusCode: HttpStatus.OK,
       message: ResponseMessages.PASSWORD_RESET_SUCCESSFULLY,
     };
   }
@@ -191,7 +211,14 @@ export class AuthService {
     const user = await this.usersService.findOneByCredentials(id, version);
     const [accessToken, newRefreshToken] =
       await this.jwtService.generateAuthTokens(user, domain, tokenId);
-    return { user, accessToken, refreshToken: newRefreshToken };
+
+    return {
+      token: { accessToken, refreshToken: newRefreshToken },
+      response: {
+        statusCode: HttpStatus.OK,
+        message: ResponseMessages.REFRESHED_TOKEN_SUCCESS,
+      },
+    };
   }
 
   public async updatePassword(
@@ -208,10 +235,17 @@ export class AuthService {
     );
     const [accessToken, refreshToken] =
       await this.jwtService.generateAuthTokens(user, domain);
-    return { user, accessToken, refreshToken };
+
+    return {
+      token: { accessToken, refreshToken },
+      response: {
+        statusCode: HttpStatus.OK,
+        message: ResponseMessages.PASSWORD_SUPDATED_SUCCESS,
+      },
+    };
   }
 
-  public async logout(refreshToken: string) {
+  public async logout(refreshToken: string): Promise<ResponseFormat<any>> {
     const { id, tokenId, exp } =
       await this.jwtService.verifyToken<IRefreshToken>(
         refreshToken,
@@ -219,6 +253,7 @@ export class AuthService {
       );
     await this.blacklistToken(id, tokenId, exp);
     return {
+      statusCode: HttpStatus.OK,
       message: ResponseMessages.LOGOUT_SUCCESSFUL,
     };
   }
@@ -233,7 +268,7 @@ export class AuthService {
       lastPassword.length === 0 ||
       !(await bcrypt.compare(password, lastPassword))
     ) {
-      throw new UnauthorizedException('Invalid credentials');
+      throw new UnauthorizedException(ResponseMessages.INVALID_CREDENTIALS);
     }
 
     const now = dayjs();
@@ -274,7 +309,7 @@ export class AuthService {
       `blacklist:${userId}:${tokenId}`,
     );
     if (!isUndefined(time) && !isNull(time)) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException(ResponseMessages.INVALID_TOKEN);
     }
   }
 

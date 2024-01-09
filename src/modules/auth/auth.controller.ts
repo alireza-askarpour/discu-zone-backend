@@ -4,14 +4,13 @@ import {
   Post,
   Body,
   Patch,
-  HttpCode,
   HttpStatus,
   Controller,
   UnauthorizedException,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 import { ConfigService } from '@nestjs/config';
-import * as cookieSignature from 'cookie-signature';
+// import * as cookieSignature from 'cookie-signature';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
@@ -24,20 +23,29 @@ import { ConfirmEmailDto } from './dtos/confirm-email.dto';
 import { ResetPasswordDto } from './dtos/reset-password.dto';
 import { ChangePasswordDto } from './dtos/change-password.dto';
 
-import { Public } from 'src/common/decorators/public.decorator';
-import { Origin } from 'src/common/decorators/origin.decorator';
+import { ApiLogout } from './docs/logout.doc';
+import { ApiUpdatePassword } from './docs/update-password.doc';
 
-import { isNull, isUndefined } from 'src/common/utils/validation.util';
+import { LoginDecorator } from './decorators/login.decorator';
+import { SignupDecorator } from './decorators/singup.decorator';
+import { Origin } from 'src/common/decorators/origin.decorator';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { ConfirmEmailDecorator } from './decorators/confirm-email.decorator';
+import { RefreshTokenDecorator } from './decorators/refresh-access.decpratpr';
+import { ResetPasswordDecorator } from './decorators/reset-password.decorator';
+import { ForgotPasswordDecorator } from './decorators/forgot-password.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Auth')
 @Controller('auth')
 export class AuthController {
   private readonly testing: boolean;
-  private readonly cookieName: string;
+  private readonly accessTime: number;
   private readonly refreshTime: number;
   private readonly cookiePath = '/api/auth';
+  private readonly accessCookieName: string;
+  private readonly refreshCookieName: string;
+  private readonly isProductionMode: boolean;
 
   constructor(
     private readonly authService: AuthService,
@@ -45,12 +53,14 @@ export class AuthController {
     private readonly configService: ConfigService,
   ) {
     this.testing = this.configService.get<boolean>('testing');
-    this.cookieName = this.configService.get<string>('REFRESH_COOKIE');
+    this.accessTime = this.configService.get<number>('jwt.access.time');
     this.refreshTime = this.configService.get<number>('jwt.refresh.time');
+    this.refreshCookieName = this.configService.get<string>('ACCESS_COOKIE');
+    this.accessCookieName = this.configService.get<string>('REFRESH_COOKIE');
+    this.isProductionMode = this.configService.get('mode') === 'production';
   }
 
-  @Public()
-  @Post('/signup')
+  @SignupDecorator()
   public async signUp(
     @Origin() origin: string | undefined,
     @Body() signUpDto: SignUpDto,
@@ -58,51 +68,48 @@ export class AuthController {
     return await this.authService.signup(signUpDto, origin);
   }
 
-  @Public()
-  @Post('/confirm-email')
+  @ConfirmEmailDecorator()
   async confirmEmail(
     @Origin() origin: string | undefined,
     @Body() confirmEmailDto: ConfirmEmailDto,
     @Res() res: Response,
   ) {
-    const result = await this.authService.confirmEmail(confirmEmailDto);
-    this.saveRefreshCookie(res, result.refreshToken)
+    const { token, response } = await this.authService.confirmEmail(
+      confirmEmailDto,
+    );
+    this.saveTokensInCookie(res, token.accessToken, token.refreshToken)
       .status(HttpStatus.OK)
-      .send(result);
+      .send(response);
   }
 
-  @Public()
-  @Post('login')
+  @LoginDecorator()
   async login(
     @Res() res: Response,
     @Origin() origin: string | undefined,
     @Body() loginDto: LoginDto,
   ) {
-    const result = await this.authService.login(loginDto);
-    this.saveRefreshCookie(res, result.refreshToken)
+    const { token, response } = await this.authService.login(loginDto);
+    this.saveTokensInCookie(res, token.accessToken, token.refreshToken)
       .status(HttpStatus.OK)
-      .send(result);
+      .send(response);
   }
 
-  @Public()
-  @Post('/refresh-access')
+  @RefreshTokenDecorator()
   public async refreshAccess(
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
-    const token = this.refreshTokenFromReq(req);
-    const result = await this.authService.refreshTokenAccess(
-      token,
+    const [_, refreshToken] = this.refreshTokenFromReq(req);
+    const { token, response } = await this.authService.refreshTokenAccess(
+      refreshToken,
       req.headers.origin,
     );
-    this.saveRefreshCookie(res, result.refreshToken)
+    this.saveTokensInCookie(res, token.accessToken, token.refreshToken)
       .status(HttpStatus.OK)
-      .send(result);
+      .send(response);
   }
 
-  @Public()
-  @Post('forgot-password')
-  @HttpCode(HttpStatus.OK)
+  @ForgotPasswordDecorator()
   public async forgotPassword(
     @Origin() origin: string | undefined,
     @Body() emailDto: EmailDto,
@@ -110,13 +117,12 @@ export class AuthController {
     return this.authService.resetPasswordEmail(emailDto, origin);
   }
 
-  @Public()
-  @Post('/reset-password')
-  @HttpCode(HttpStatus.OK)
+  @ResetPasswordDecorator()
   public async resetPassword(@Body() resetPasswordDto: ResetPasswordDto) {
     return this.authService.resetPassword(resetPasswordDto);
   }
 
+  @ApiUpdatePassword()
   @Patch('/update-password')
   public async updatePassword(
     @Res() res: Response,
@@ -124,58 +130,75 @@ export class AuthController {
     @Origin() origin: string | undefined,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    const result = await this.authService.updatePassword(
+    const { token, response } = await this.authService.updatePassword(
       userId,
       changePasswordDto,
       origin,
     );
 
-    this.saveRefreshCookie(res, result.refreshToken)
+    this.saveTokensInCookie(res, token.accessToken, token.refreshToken)
       .status(HttpStatus.OK)
-      .send(result);
+      .send(response);
   }
 
+  @ApiLogout()
   @Post('/logout')
   public async logout(
     @Req() req: Request,
     @Res() res: Response,
   ): Promise<void> {
-    const token = this.refreshTokenFromReq(req);
-    const message = await this.authService.logout(token);
+    const [_, refreshToken] = this.refreshTokenFromReq(req);
+    const message = await this.authService.logout(refreshToken);
     res
-      .clearCookie(this.cookieName, { path: this.cookiePath })
+      .clearCookie(this.accessCookieName, { path: this.cookiePath })
+      .clearCookie(this.refreshCookieName, { path: this.cookiePath })
       .header('Content-Type', 'application/json')
       .status(HttpStatus.OK)
-      .send(message);
+      .json(message);
   }
 
-  private refreshTokenFromReq(req: Request): string {
-    const token: string | undefined = req.cookies[this.cookieName];
+  /***
+   * Get accessToken and refreshToken from request
+   */
+  private refreshTokenFromReq(req: Request): string[] {
+    const accessToken: string | undefined = req.cookies[this.accessCookieName];
+    const refreshToken: string | undefined =
+      req.cookies[this.refreshCookieName];
 
-    console.log({ tokens: req.cookies, token });
-    if (isUndefined(token) || isNull(token)) {
+    if (!accessToken || !refreshToken) {
       throw new UnauthorizedException();
     }
     // const cookieSecret = this.configService.get<string>('COOKIE_SECRET');
     // const value = cookieSignature.unsign(token, cookieSecret);
 
-    if (!token) {
-      throw new UnauthorizedException();
-    }
+    // if (!value) {
+    //   throw new UnauthorizedException();
+    // }
 
-    return token;
+    return [accessToken, refreshToken];
   }
 
-  private saveRefreshCookie(res: Response, refreshToken: string): Response {
-    console.log(132, { refreshToken });
-    return res.cookie(this.cookieName, refreshToken, {
-      secure: false,
-      httpOnly: true,
-      // signed: true,
-      path: this.cookiePath,
-      expires: new Date(Date.now() + this.refreshTime * 1000),
-    });
-
-    // .header('Content-Type', 'application/json');
+  /**
+   * Save AccessToken and RefreshToken in cookie
+   */
+  private saveTokensInCookie(
+    res: Response,
+    accessToken: string,
+    refreshToken: string,
+  ): Response {
+    return res
+      .cookie(this.accessCookieName, accessToken, {
+        secure: this.isProductionMode,
+        httpOnly: true,
+        path: this.cookiePath,
+        expires: new Date(Date.now() + this.accessTime * 1000),
+      })
+      .cookie(this.refreshCookieName, refreshToken, {
+        secure: this.isProductionMode,
+        httpOnly: true,
+        path: this.cookiePath,
+        expires: new Date(Date.now() + this.refreshTime * 1000),
+      })
+      .header('Content-Type', 'application/json');
   }
 }
