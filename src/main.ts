@@ -25,7 +25,6 @@ async function bootstrap() {
 
   // const cookieValue = 'your-cookie-value';
   // const _cookieSecret = 'your-cookie-secret';
-
   // const signedCookie = cookieSignature.sign(cookieValue, _cookieSecret);
 
   // console.log('Original Cookie:', cookieValue);

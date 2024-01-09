@@ -138,20 +138,18 @@ export class AuthController {
   private refreshTokenFromReq(req: Request): string {
     const token: string | undefined = req.cookies[this.cookieName];
 
-    console.log({ tokens: req.cookies });
+    console.log({ tokens: req.cookies, token });
     if (isUndefined(token) || isNull(token)) {
       throw new UnauthorizedException();
     }
-    const cookieSecret = this.configService.get<string>('COOKIE_SECRET');
-    const value = cookieSignature.unsign(token, cookieSecret);
-    console.log({ value });
-    // const { valid, value } = result;
+    // const cookieSecret = this.configService.get<string>('COOKIE_SECRET');
+    // const value = cookieSignature.unsign(token, cookieSecret);
 
-    if (!value) {
+    if (!token) {
       throw new UnauthorizedException();
     }
 
-    return value;
+    return token;
   }
 
   private saveRefreshCookie(res: Response, refreshToken: string): Response {
@@ -159,7 +157,7 @@ export class AuthController {
     return res.cookie(this.cookieName, refreshToken, {
       secure: false,
       httpOnly: true,
-      signed: true,
+      // signed: true,
       path: this.cookiePath,
       expires: new Date(Date.now() + this.refreshTime * 1000),
     });
