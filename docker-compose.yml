@@ -1,0 +1,32 @@
+version: '3.8'
+services:
+  discu_zone:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - '4000:4000'
+      - '81:81'
+    depends_on:
+      - redis
+      - db  # <- Change 'postgres' to 'db' here
+    env_file:
+      - .env
+  db:
+    image: postgres:latest
+    container_name: discu_zone_db
+    env_file:
+      - .env
+    restart: always
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+  redis:
+    image: redis
+    container_name: discu_zone_redis
+    ports:
+      - 6379:6379
+volumes:
+  pgdata:
