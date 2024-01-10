@@ -1,16 +1,16 @@
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { isUndefined } from '../utils/validation.util';
+import { isUndefined } from '../common/utils/validation.util';
 import { IConfig } from './interfaces/config.interface';
-import { redisUrlParser } from '../utils/redis-url-parser.util';
+import { redisUrlParser } from '../common/utils/redis-url-parser.util';
 
 export const config = (): IConfig => {
   const publicKey = readFileSync(
-    join(__dirname, '..', '..', '..', 'keys/public.key'),
+    join(__dirname, '..', '..', 'keys/public.key'),
     'utf-8',
   );
   const privateKey = readFileSync(
-    join(__dirname, '..', '..', '..', 'keys/private.key'),
+    join(__dirname, '..', '..', 'keys/private.key'),
     'utf-8',
   );
 

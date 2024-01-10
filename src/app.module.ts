@@ -2,9 +2,9 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { CacheModule } from '@nestjs/cache-manager';
 
-import { config } from './common/config/index.config';
-import { CacheConfig } from './common/config/cache.config';
-import { validationSchema } from './common/config/schema/config.schema';
+import { config } from './config/index.config';
+import { CacheConfig } from './config/cache.config';
+import { validationSchema } from './config/schema/config.schema';
 
 import { DatabaseModule } from './common/database/database.module';
 import { UsersModule } from './modules/users/users.module';

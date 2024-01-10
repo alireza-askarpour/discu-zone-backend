@@ -7,7 +7,7 @@ import * as cookieSignature from 'cookie-signature';
 import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
-import { SwaggerConfig } from './common/config/swagger.config';
+import { SwaggerConfig } from './config/swagger.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {

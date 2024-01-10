@@ -27,7 +27,7 @@ import {
   IRefreshPayload,
 } from './interfaces/refresh-token.interface';
 import { TokenTypeEnum } from './enums/token-type.enum';
-import { IJwt } from 'src/common/config/interfaces/jwt.interface';
+import { IJwt } from 'src/config/interfaces/jwt.interface';
 import { IEmailPayload, IEmailToken } from './interfaces/email-token.interface';
 
 @Injectable()
