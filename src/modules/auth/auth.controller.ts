@@ -55,8 +55,8 @@ export class AuthController {
     this.testing = this.configService.get<boolean>('testing');
     this.accessTime = this.configService.get<number>('jwt.access.time');
     this.refreshTime = this.configService.get<number>('jwt.refresh.time');
-    this.refreshCookieName = this.configService.get<string>('ACCESS_COOKIE');
-    this.accessCookieName = this.configService.get<string>('REFRESH_COOKIE');
+    this.accessCookieName = this.configService.get<string>('ACCESS_COOKIE');
+    this.refreshCookieName = this.configService.get<string>('REFRESH_COOKIE');
     this.isProductionMode = this.configService.get('mode') === 'production';
   }
 
