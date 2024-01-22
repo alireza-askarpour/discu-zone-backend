@@ -13,7 +13,7 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @GetMeDecorator()
-  public getMe(@CurrentUser() userId: string) {
+  public getMe(@CurrentUser('id') userId: string) {
     return this.userService.getMe(userId);
   }
 

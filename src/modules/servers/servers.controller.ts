@@ -1,6 +1,5 @@
-import { Request } from 'express';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Body, Controller, Param, Req, UploadedFile } from '@nestjs/common';
+import { Body, Controller, Param, UploadedFile } from '@nestjs/common';
 
 import { ServersService } from './servers.service';
 import { ServerCreateDto } from './dtos/create-server.dto';
@@ -9,7 +8,7 @@ import { CreateServerDecorator } from './decorators/create-server.decorator';
 import { UpdateServerDecorator } from './decorators/update-server.decorator';
 import { UploadAvatarDecorator } from './decorators/upload-avatar.decorator';
 import { DeleteAvatarDecorator } from './decorators/delete-avatar.decorator';
-import { GetUser } from 'src/common/decorators/get-user-param.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Servers')
@@ -18,7 +17,7 @@ export class ServersController {
   constructor(private readonly serversService: ServersService) {}
 
   @CreateServerDecorator()
-  createServer(@Body() data: ServerCreateDto, @GetUser('id') id: string) {
+  createServer(@Body() data: ServerCreateDto, @CurrentUser('id') id: string) {
     return this.serversService.createServer(data, id);
   }
 

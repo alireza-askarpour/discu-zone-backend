@@ -9,11 +9,9 @@ export class FriendsController {
 
   @Post('send-invite')
   async sendRequest(
-    @CurrentUser() userId: string,
+    @CurrentUser('id') userId: string,
     @Body() sendInviteDto: SendInviteDto,
   ) {
     return this.friendsService.sentInvite(userId, sendInviteDto.username);
   }
-
-  
 }

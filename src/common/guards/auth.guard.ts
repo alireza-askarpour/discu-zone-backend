@@ -12,12 +12,14 @@ import { JwtService } from '../../modules/jwt/jwt.service';
 import { IS_PUBLIC_KEY } from '../decorators/public.decorator';
 import { TokenTypeEnum } from '../../modules/jwt/enums/token-type.enum';
 import { isNull, isUndefined } from '../../common/utils/validation.util';
+import { UsersRepository } from 'src/modules/users/users.repository';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
   constructor(
     private readonly reflector: Reflector,
     private readonly jwtService: JwtService,
+    private readonly usersRepository: UsersRepository,
   ) {}
 
   public async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -28,6 +30,7 @@ export class AuthGuard implements CanActivate {
     const activate = await this.setHttpHeader(
       context.switchToHttp().getRequest<Request>(),
       isPublic,
+      this.usersRepository,
     );
     if (!activate) {
       throw new UnauthorizedException();
@@ -39,6 +42,7 @@ export class AuthGuard implements CanActivate {
   private async setHttpHeader(
     req: Request,
     isPublic: boolean,
+    usersRepository: UsersRepository,
   ): Promise<boolean> {
     const auth = req.headers?.authorization;
 
@@ -63,7 +67,9 @@ export class AuthGuard implements CanActivate {
         TokenTypeEnum.ACCESS,
       );
 
-      req.user = id;
+      const user = await usersRepository.findOneById(id);
+      console.log(user);
+      req.user = user;
       return true;
     } catch (_) {
       return isPublic;

@@ -4,7 +4,7 @@ import { Body, Controller, Param } from '@nestjs/common';
 import { InvitesService } from './invites.service';
 import { createInviteSchema } from './schemas/create-invite.schema';
 
-import { GetUser } from 'src/common/decorators/get-user-param.decorator';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { CreateInviteDecorator } from './decorators/create-invite.decorator';
 
 import { InviteCreateDto } from './dtos/create-invite.dto';
@@ -19,7 +19,7 @@ export class InvitesController {
   @CreateInviteDecorator()
   create(
     @Body() data: InviteCreateDto,
-    @GetUser('id') userId: string,
+    @CurrentUser('id') userId: string,
     @Param('serverId') serverId: string,
   ) {
     joiValidator(createInviteSchema, data);

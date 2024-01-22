@@ -126,7 +126,7 @@ export class AuthController {
   @Patch('/update-password')
   public async updatePassword(
     @Res() res: Response,
-    @CurrentUser() userId: string,
+    @CurrentUser('id') userId: string,
     @Origin() origin: string | undefined,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
