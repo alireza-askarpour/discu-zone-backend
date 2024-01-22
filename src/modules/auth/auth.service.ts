@@ -86,7 +86,7 @@ export class AuthService {
       TokenTypeEnum.CONFIRMATION,
       domain,
     );
-
+console.log({confirmationToken, email: createdUser.email});
     await this.mailService.sendConfirmationEmail(
       createdUser.email,
       confirmationToken,

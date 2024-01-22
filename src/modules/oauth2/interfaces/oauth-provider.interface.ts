@@ -1,4 +1,4 @@
-import { User } from '../../users/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { OAuthProvidersEnum } from '../../users/enums/oauth-providers.enum';
 
 export interface IOAuthProvider {

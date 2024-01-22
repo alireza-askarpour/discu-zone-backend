@@ -1,10 +1,11 @@
 import { join } from 'path';
 import { readFileSync } from 'fs';
-import { isUndefined } from '../common/utils/validation.util';
 import { IConfig } from './interfaces/config.interface';
+import { isUndefined } from '../common/utils/validation.util';
 import { redisUrlParser } from '../common/utils/redis-url-parser.util';
 
 export const config = (): IConfig => {
+  console.log(join(__dirname, '..', '..', 'keys/public.key'));
   const publicKey = readFileSync(
     join(__dirname, '..', '..', 'keys/public.key'),
     'utf-8',

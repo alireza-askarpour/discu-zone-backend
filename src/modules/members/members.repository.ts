@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { Member } from './member.entity';
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 import { MEMBER_REPOSITORY } from 'src/common/constants';
 import { MemberCreateInput } from 'src/common/interfaces/member.interface';
 

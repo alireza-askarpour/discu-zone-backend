@@ -1,10 +1,10 @@
+import { Controller, UploadedFile } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Controller, UnauthorizedException, Req } from '@nestjs/common';
 
 import { UsersService } from './users.service';
 import { GetMeDecorator } from './decorators/get-me.decorator';
-import { ResponseMessages } from 'src/common/constants/response-messages.constant';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { ChangeAvatarDecorator } from './decorators/change-avatar.decorator';
 
 @ApiBearerAuth()
 @ApiTags('Users')
@@ -13,10 +13,15 @@ export class UsersController {
   constructor(private userService: UsersService) {}
 
   @GetMeDecorator()
-  async getMe(@CurrentUser() userId: string) {
-    if (!userId) {
-      throw new UnauthorizedException(ResponseMessages.UNAUTHORIZED);
-    }
+  public getMe(@CurrentUser() userId: string) {
     return this.userService.getMe(userId);
+  }
+
+  @ChangeAvatarDecorator()
+  public changeAvatar(
+    @CurrentUser('id') userId: string,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.userService.changeAvatar(userId, file);
   }
 }

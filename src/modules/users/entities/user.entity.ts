@@ -1,6 +1,7 @@
 import * as dayjs from 'dayjs';
 import { Table, Column, Model, DataType } from 'sequelize-typescript';
-import { ICredentials } from './interfaces/credentials.interface';
+import { UserStatusEnum } from '../enums/user-status.enum';
+import { ICredentials } from '../interfaces/credentials.interface';
 
 @Table
 export class User extends Model<User> {
@@ -70,10 +71,29 @@ export class User extends Model<User> {
   cover: string | null;
 
   @Column({
-    type: DataType.ARRAY(DataType.STRING),
+    type: DataType.ENUM(...Object.values(UserStatusEnum)),
+    allowNull: false,
+    defaultValue: UserStatusEnum.Online,
+  })
+  status: UserStatusEnum;
+
+  @Column({
+    type: DataType.ARRAY(DataType.UUID),
     defaultValue: [],
   })
   friends: string[];
+
+  @Column({
+    type: DataType.ARRAY(DataType.STRING),
+    defaultValue: [],
+  })
+  sentInvites: string[];
+
+  @Column({
+    type: DataType.ARRAY(DataType.STRING),
+    defaultValue: [],
+  })
+  receivedInvites: string[];
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),

@@ -14,7 +14,7 @@ import {
   JsonWebTokenError,
 } from '@nestjs/jwt';
 
-import { User } from '../users/user.entity';
+import { User } from '../users/entities/user.entity';
 import { CommonService } from 'src/common/common.service';
 import { UsersRepository } from '../users/users.repository';
 
