@@ -24,12 +24,21 @@ export class FriendsRepository {
     });
   }
 
-  create(senderId: string, receiverId: string) {
+  create(senderId: string, receiverId: string): Promise<Friend> {
     return this.friendModel.create({
       requestSenderId: senderId,
       requestReceiverId: receiverId,
       status: StatusEnum.PENDING,
       inviteNotifStatus: InviteStatusEnum.SENT,
+    });
+  }
+
+  deleteBySenderIdAndReceiverId(
+    senderId: string,
+    receiverId: string,
+  ): Promise<number> {
+    return this.friendModel.destroy({
+      where: { requestSenderId: senderId, requestReceiverId: receiverId },
     });
   }
 }

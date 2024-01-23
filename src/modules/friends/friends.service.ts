@@ -43,4 +43,27 @@ export class FriendsService {
       message: ResponseMessages.INVITED_SENT_SUCCESS,
     };
   }
+
+  async cancelInvite(
+    senderId: string,
+    receiverUsername: string,
+  ): Promise<ResponseFormat<any>> {
+    // check exist receiver
+    const receiver = await this.usersRepository.findOneByUsername(
+      receiverUsername,
+    );
+    if (!receiver || receiver.id === senderId) {
+      throw new BadRequestException(ResponseMessages.NOT_FOUND_USER);
+    }
+
+    await this.friendsRepository.deleteBySenderIdAndReceiverId(
+      senderId,
+      receiver.id,
+    );
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: ResponseMessages.CANCELED_INVITE_SUCCESS,
+    };
+  }
 }
