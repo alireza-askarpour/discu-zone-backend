@@ -19,7 +19,6 @@ export class FriendsRepository {
           { requestSenderId: senderId, requestReceiverId: receiverId },
           { requestSenderId: receiverId, requestReceiverId: senderId },
         ],
-        status: StatusEnum.ACCEPTED,
       },
     });
   }
