@@ -3,7 +3,6 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { FriendDto } from './dtos/friend.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { User } from '../users/entities/user.entity';
 
 @ApiTags('Friends')
 @ApiBearerAuth()
@@ -19,12 +18,12 @@ export class FriendsController {
     return this.friendsService.sentInvite(sencerId, sendInviteDto.username);
   }
 
-  @Post('cancel-invite')
+  @Post('cancel-invite/:receiverId')
   async cancelRequest(
     @CurrentUser('id') sencerId: string,
-    @Body() cancelInviteDto: FriendDto,
+    @Param('receiverId', ParseUUIDPipe) receiverId: string,
   ) {
-    return this.friendsService.cancelInvite(sencerId, cancelInviteDto.username);
+    return this.friendsService.cancelInvite(sencerId, receiverId);
   }
 
   @Post('accept-invite/:receiverId')

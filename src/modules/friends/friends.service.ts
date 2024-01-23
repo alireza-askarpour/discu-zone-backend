@@ -46,12 +46,10 @@ export class FriendsService {
 
   async cancelInvite(
     senderId: string,
-    receiverUsername: string,
+    receiverId: string,
   ): Promise<ResponseFormat<any>> {
     // check exist receiver
-    const receiver = await this.usersRepository.findOneByUsername(
-      receiverUsername,
-    );
+    const receiver = await this.usersRepository.findOneById(receiverId);
     if (!receiver || receiver.id === senderId) {
       throw new BadRequestException(ResponseMessages.NOT_FOUND_USER);
     }
