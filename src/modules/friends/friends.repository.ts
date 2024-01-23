@@ -67,4 +67,24 @@ export class FriendsRepository {
       },
     });
   }
+
+  findOne(senderId: string, receiverId: string): Promise<Friend> {
+    return this.friendModel.findOne({
+      where: {
+        requestSenderId: senderId,
+        requestReceiverId: receiverId,
+        status: StatusEnum.PENDING,
+      },
+    });
+  }
+
+  deleteByReceiver(senderId: string, receiverId: string): Promise<number> {
+    return this.friendModel.destroy({
+      where: {
+        requestSenderId: senderId,
+        requestReceiverId: receiverId,
+        status: StatusEnum.PENDING,
+      },
+    });
+  }
 }

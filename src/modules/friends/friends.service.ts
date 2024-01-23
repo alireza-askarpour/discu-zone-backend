@@ -86,4 +86,29 @@ export class FriendsService {
       message: ResponseMessages.ACCEPTED_INVITE_SUCCESS,
     };
   }
+
+  async declineInvite(
+    senderId: string,
+    receiverId: string,
+  ): Promise<ResponseFormat<any>> {
+    // check exist receiver and check already don't accepted invite
+    const [sender, record] = await Promise.all([
+      this.usersRepository.findOneById(senderId),
+      this.friendsRepository.findOne(senderId, receiverId),
+    ]);
+    if (!sender) {
+      throw new BadRequestException(ResponseMessages.NOT_FOUND_SENDER);
+    }
+    if (!record) {
+      throw new BadRequestException(ResponseMessages.NOT_FOUND_INVITE);
+    }
+
+    // delete record
+    await this.friendsRepository.deleteByReceiver(senderId, receiverId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: ResponseMessages.DECLINEED_INVITE_SUCCESS,
+    };
+  }
 }
