@@ -1,5 +1,6 @@
 import { Model, Column, DataType, Table } from 'sequelize-typescript';
 import { StatusEnum } from '../enums/status.enum';
+import { InviteStatusEnum } from '../enums/invite-status.enum';
 
 @Table
 export class Friend extends Model<Friend> {
@@ -15,17 +16,23 @@ export class Friend extends Model<Friend> {
     type: DataType.UUID,
     allowNull: false,
   })
-  requesterId: string;
+  requestSenderId: string;
 
   @Column({
     type: DataType.UUID,
     allowNull: false,
   })
-  addresseeId: string;
+  requestReceiverId: string;
 
   @Column({
-    type: DataType.STRING,
+    type: DataType.ENUM(StatusEnum.PENDING, StatusEnum.ACCEPTED),
     defaultValue: StatusEnum.PENDING,
   })
   status: StatusEnum;
+
+  @Column({
+    type: DataType.ENUM(InviteStatusEnum.SENT, InviteStatusEnum.SEEN),
+    defaultValue: InviteStatusEnum.SENT,
+  })
+  inviteNotifStatus: InviteStatusEnum;
 }

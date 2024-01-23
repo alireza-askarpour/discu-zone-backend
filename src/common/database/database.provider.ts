@@ -42,7 +42,9 @@ export const databaseProviders = [
         Member,
         Friend,
       ]);
-      await sequelize.sync();
+      await sequelize.sync({
+        force: process.env.NODE_ENV === DEVELOPMENT,
+      });
       return sequelize;
     },
   },

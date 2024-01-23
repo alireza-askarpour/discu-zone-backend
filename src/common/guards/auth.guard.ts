@@ -66,9 +66,7 @@ export class AuthGuard implements CanActivate {
         token,
         TokenTypeEnum.ACCESS,
       );
-
       const user = await usersRepository.findOneById(id);
-      console.log(user);
       req.user = user;
       return true;
     } catch (_) {

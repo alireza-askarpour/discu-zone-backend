@@ -3,7 +3,9 @@ import { Table, Column, Model, DataType } from 'sequelize-typescript';
 import { UserStatusEnum } from '../enums/user-status.enum';
 import { ICredentials } from '../interfaces/credentials.interface';
 
-@Table
+@Table({
+  timestamps: true,
+})
 export class User extends Model<User> {
   @Column({
     type: DataType.UUID,
@@ -76,24 +78,6 @@ export class User extends Model<User> {
     defaultValue: UserStatusEnum.Online,
   })
   status: UserStatusEnum;
-
-  @Column({
-    type: DataType.ARRAY(DataType.UUID),
-    defaultValue: [],
-  })
-  friends: string[];
-
-  @Column({
-    type: DataType.ARRAY(DataType.STRING),
-    defaultValue: [],
-  })
-  sentInvites: string[];
-
-  @Column({
-    type: DataType.ARRAY(DataType.STRING),
-    defaultValue: [],
-  })
-  receivedInvites: string[];
 
   @Column({
     type: DataType.ARRAY(DataType.STRING),

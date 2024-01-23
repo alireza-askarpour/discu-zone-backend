@@ -5,9 +5,10 @@ import { FriendsController } from './friends.controller';
 import { FriendsRepository } from './friends.repository';
 import { Friend } from './entities/friend.entity';
 import { FRIEND_REPOSITORY } from 'src/common/constants';
+import { UsersModule } from '../users/users.module';
 
 @Module({
-  imports: [AuthModule],
+  imports: [AuthModule, UsersModule],
   providers: [
     FriendsService,
     FriendsRepository,
