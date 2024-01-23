@@ -26,10 +26,10 @@ export class FriendsController {
     return this.friendsService.cancelInvite(senderId, receiverId);
   }
 
-  @Post('accept-invite/:receiverId')
+  @Post('accept-invite/:senderId')
   async acceptRequest(
-    @Param('receiverId', ParseUUIDPipe) receiverId: string,
-    @CurrentUser('id') senderId: string,
+    @Param('senderId', ParseUUIDPipe) senderId: string,
+    @CurrentUser('id') receiverId: string,
   ) {
     return this.friendsService.acceptInvite(senderId, receiverId);
   }

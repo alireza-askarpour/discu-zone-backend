@@ -3,6 +3,7 @@ import { UsersRepository } from '../users/users.repository';
 import { FriendsRepository } from './friends.repository';
 import { ResponseFormat } from 'src/common/interfaces/response.interface';
 import { ResponseMessages } from 'src/common/constants/response-messages.constant';
+import { StatusEnum } from './enums/status.enum';
 
 @Injectable()
 export class FriendsService {
@@ -69,13 +70,21 @@ export class FriendsService {
     senderId: string,
     receiverId: string,
   ): Promise<ResponseFormat<any>> {
-    // check exist receiver and check already don't accepted invite
-    const [receiver] = await Promise.all([
-      this.usersRepository.findOneById(receiverId),
+    // check exist sender and check already don't accepted invite
+    const [sender, alreadyAcceptedInvite, existRecord] = await Promise.all([
+      this.usersRepository.findOneById(senderId),
       this.friendsRepository.findAlreadyAcceptedInvite(senderId, receiverId),
+      this.friendsRepository.findOne(senderId, receiverId),
     ]);
-    if (!receiver || receiverId === senderId) {
-      throw new BadRequestException(ResponseMessages.NOT_FOUND_USER);
+    console.log({senderId, receiverId});
+    if (!sender || receiverId === senderId) {
+      throw new BadRequestException(ResponseMessages.NOT_FOUND_SENDER);
+    }
+    if (alreadyAcceptedInvite) {
+      throw new BadRequestException(ResponseMessages.ALREADY_ACCEPTED_INVITE);
+    }
+    if (!existRecord) {
+      throw new BadRequestException(ResponseMessages.NOT_FOUND_INVITE);
     }
 
     // change status to `ACCEPTED` by senderId and receiverId
@@ -94,7 +103,7 @@ export class FriendsService {
     // check exist receiver and check already don't accepted invite
     const [sender, record] = await Promise.all([
       this.usersRepository.findOneById(senderId),
-      this.friendsRepository.findOne(senderId, receiverId),
+      this.friendsRepository.findOne(senderId, receiverId, StatusEnum.PENDING),
     ]);
     if (!sender) {
       throw new BadRequestException(ResponseMessages.NOT_FOUND_SENDER);
