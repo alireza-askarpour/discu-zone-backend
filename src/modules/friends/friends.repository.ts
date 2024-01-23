@@ -41,4 +41,30 @@ export class FriendsRepository {
       where: { requestSenderId: senderId, requestReceiverId: receiverId },
     });
   }
+
+  updateStatus(senderId: string, receiverId: string) {
+    return this.friendModel.update(
+      {
+        status: StatusEnum.ACCEPTED,
+      },
+      {
+        where: {
+          requestSenderId: senderId,
+          requestReceiverId: receiverId,
+        },
+      },
+    );
+  }
+
+  findAlreadyAcceptedInvite(senderId: string, receiverId: string) {
+    return this.friendModel.findOne({
+      where: {
+        [Op.or]: [
+          { requestSenderId: senderId, requestReceiverId: receiverId },
+          { requestSenderId: receiverId, requestReceiverId: senderId },
+        ],
+        status: StatusEnum.ACCEPTED,
+      },
+    });
+  }
 }

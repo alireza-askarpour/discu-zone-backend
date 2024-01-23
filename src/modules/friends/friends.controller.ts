@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, Param, ParseUUIDPipe, Post } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { FriendsService } from './friends.service';
 import { FriendDto } from './dtos/friend.dto';
@@ -25,5 +25,13 @@ export class FriendsController {
     @Body() cancelInviteDto: FriendDto,
   ) {
     return this.friendsService.cancelInvite(sencerId, cancelInviteDto.username);
+  }
+
+  @Post('accept-invite/:receiverId')
+  async acceptRequest(
+    @Param('receiverId', ParseUUIDPipe) receiverId: string,
+    @CurrentUser('id') sencerId: string,
+  ) {
+    return this.friendsService.acceptInvite(sencerId, receiverId);
   }
 }

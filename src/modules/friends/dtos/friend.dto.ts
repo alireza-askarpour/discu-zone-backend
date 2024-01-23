@@ -1,10 +1,9 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 export class FriendDto {
   @ApiProperty()
   @IsString()
   @IsNotEmpty()
-  @MaxLength(25)
   username: string;
 }

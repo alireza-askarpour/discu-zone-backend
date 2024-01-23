@@ -66,4 +66,26 @@ export class FriendsService {
       message: ResponseMessages.CANCELED_INVITE_SUCCESS,
     };
   }
+
+  async acceptInvite(
+    senderId: string,
+    receiverId: string,
+  ): Promise<ResponseFormat<any>> {
+    // check exist receiver and check already don't accepted invite
+    const [receiver] = await Promise.all([
+      this.usersRepository.findOneById(receiverId),
+      this.friendsRepository.findAlreadyAcceptedInvite(senderId, receiverId),
+    ]);
+    if (!receiver || receiverId === senderId) {
+      throw new BadRequestException(ResponseMessages.NOT_FOUND_USER);
+    }
+
+    // change status to `ACCEPTED` by senderId and receiverId
+    await this.friendsRepository.updateStatus(senderId, receiverId);
+
+    return {
+      statusCode: HttpStatus.OK,
+      message: ResponseMessages.ACCEPTED_INVITE_SUCCESS,
+    };
+  }
 }
