@@ -2,7 +2,7 @@ import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { SwaggerTheme } from 'swagger-themes';
 
-export const SwaggerConfig = (app: INestApplication): void => {
+export const SwaggerConfig = (app: INestApplication, path: string): void => {
   const config = new DocumentBuilder()
     .setTitle('DiscuZone')
     .setDescription(
@@ -22,5 +22,5 @@ export const SwaggerConfig = (app: INestApplication): void => {
     explorer: true,
     customCss: theme.getBuffer('dark'),
   };
-  SwaggerModule.setup('api-docs', app, document, options);
+  SwaggerModule.setup(path, app, document, options);
 };

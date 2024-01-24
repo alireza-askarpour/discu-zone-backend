@@ -8,6 +8,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 
 import { AppModule } from './app.module';
 import { SwaggerConfig } from './config/swagger.config';
+import { AsyncApiConfig } from './config/async-api.config';
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule, {
@@ -18,6 +19,8 @@ async function bootstrap() {
   const port = configService.get('port');
   const mode = configService.get('mode');
   const cookieSecret = configService.get<string>('COOKIE_SECRET');
+  const restDocumentPath = configService.get<string>('documentRoutes.rest');
+  const socketDocumentPath = configService.get<string>('documentRoutes.socket');
 
   app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api');
@@ -30,7 +33,8 @@ async function bootstrap() {
   // console.log('Original Cookie:', cookieValue);
   // console.log('Signed Cookie:', signedCookie);
 
-  SwaggerConfig(app);
+  SwaggerConfig(app, restDocumentPath);
+  await AsyncApiConfig(app, port, socketDocumentPath);
 
   await app.listen(port, () => {
     const runningMode = `Server running in ${bold(mode)} mode`;

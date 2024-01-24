@@ -20,6 +20,10 @@ export const config = (): IConfig => {
     url: process.env.URL,
     port: parseInt(process.env.PORT) || 3000,
     domain: process.env.DOMAIN,
+    documentRoutes: {
+      rest: process.env.REST_DOCUMENT_ROUTE,
+      socket: process.env.SOCKET_DOCUMENT_ROUTE,
+    },
     mode: process.env.NODE_ENV || 'development',
     db: {
       host: process.env.DB_HOST,

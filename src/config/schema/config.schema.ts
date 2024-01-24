@@ -7,7 +7,8 @@ export const validationSchema = Joi.object({
   PORT: Joi.number().required(),
   DOMAIN: Joi.string().required(),
   URL: Joi.string().uri().required(),
-  DOCUMENT_ROUTE: Joi.string().required(),
+  REST_DOCUMENT_ROUTE: Joi.string().required(),
+  SOCKET_DOCUMENT_ROUTE: Joi.string().required(),
 
   // Database config
   DB_HOST: Joi.string().required(),
